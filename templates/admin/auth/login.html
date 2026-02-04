@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Second</title>
+</head>
+<body>
+    <form action="/admin/login" method="POST">
+        <label for="">Email</label>
+        <input type="email" name="mail">
+        <label for="">Password</label>
+        <input type="password" name="word">
+        <button type="submit">Submit</button>
+    </form>
+    <a href="/register_users">To register</a>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <div class="flash">{{ message }}
+                <a href="javascript:void(0)">X</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>

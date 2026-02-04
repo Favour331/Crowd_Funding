@@ -1,0 +1,41 @@
+{% extends 'base.html'%}
+{%block list%}
+    <h2>
+        <a href="/projects/to_creator">Create a project</a>
+    </h2>
+
+  <div class="main" style="justify-content: space-between;display: flex;padding-top: 10px;">
+    {%for ace in curts%}
+      {%for den in slet%}
+        <a href="/projects/list/active/{{den[1]}}" style="text-decoration: none;">
+      {%endfor%}
+          <h3>Active Projects</h3>
+          <h2>{{ace[0]}}</h2>
+        </a>
+    {%endfor%}
+    {%for pill in thrd%}
+      <a href="hjk" style="text-decoration: none;">
+        <h3>Pending Projects</h3>
+        <h2>{{pill[0]}}</h2>
+      </a>
+    {%endfor%}
+    {%for thd in pels%}
+      <a href="#" style="text-decoration: none;">
+        <h3>Rejected Projects</h3>
+        <h2>{{thd[0]}}</h2>
+      </a>
+    {%endfor%}
+  </div>
+  
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <div class="flash">{{ message }}
+                <a href="javascript:void(0)">X</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+{%endblock%}

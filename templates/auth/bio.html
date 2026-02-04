@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <div class="flash">{{ message }}
+                <a href="javascript:void(0)">X</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    <form action="/bio" method="POST" style="display: grid;width: 30%;place-self: center;">
+        <h3>Phone Number</h3>
+        <input type="tel" name="telle">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <div class="flash" style="font-size: 12px; color: red;">{{ message }}
+                <a href="javascript:void(0)">X</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+        <button type="submit">Review</button>
+    </form>
+</body>
+</html>

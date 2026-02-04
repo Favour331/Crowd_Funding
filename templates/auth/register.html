@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base</title>
+</head>
+<body>
+    <form action="/register_users" method="POST">
+        <label for="">User name</label>
+        <input type="text" name="user_name" aria-required="true">
+        <label for="">First Name</label>
+        <input type="text" name="firstname" aria-required="true">
+        <label for="">Last Name</label>
+        <input type="text" name="lastname" aria-required="true">
+        <label for="">Email</label>
+        <input type="email" name="email" aria-required="true">
+        <label for="">Password</label>
+        <input type="password" name="passwd">
+        <select name="role" id="">
+            <option value="Creator">Creator</option>
+            <option value="Backer">Backer</option>
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+    <a href="/login">To Login</a>
+    <div>
+        <main>
+            <span>
+                <a href="/to_admin">Press here if you are an admin</a>
+            </span>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{%extends 'index.html'%}
+{%block dash%}
+    <div style="display: flex;gap: 20px;">
+        {% for ace in curls%}
+            <a href="/admin/creators/view">
+                <h2>Creators</h2>
+                <h1>{{ace[0]}}</h1>
+            </a>
+        {%endfor%}
+        {%for bells in felt%}
+            <a href="/admin/backers/view">
+                <h2>Backers</h2>
+                <h1>{{bells[0]}}</h1>
+            </a>
+        {%endfor%}
+        {%for rol in thrd%}
+            <a href="/admin/projects/view">
+                <h2>Pendng_projects</h2>
+                <h1>{{rol[0]}}</h1>
+            </a>
+        {%endfor%}
+        {%for rol in frth%}
+            <a href="#">
+                <h2>Active_projects</h2>
+                <h1>{{rol[0]}}</h1>
+            </a>
+        {%endfor%}
+    </div>
+{%endblock%}

@@ -1,0 +1,56 @@
+{% extends 'index.html'%}
+{%block dash%}
+
+    <div>
+      <a href="/projects/edit">Edit Project</a>
+    </div>
+      
+    <table>
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Short Descrition</th>
+        <th>Story</th>
+        <th>Risk Challenges</th>
+        <th>Funding goal</th>
+        <th>Amount raised</th>
+        <th>Image</th>
+        <th>Rewards</th>
+        <th>Deadline</th>
+        <th>Status</th>
+      </tr>
+      {% for ace in roll %}
+        <tr>
+            <td>{{ace[2]}}</td>
+            <td>{{ace[4]}}</td>
+            <td>{{ace[5]}}</td>
+            <td>{{ace[13]}}</td>
+            <td>{{ace[14]}}</td>
+            <td>{{ace[7]}}</td>
+            <td>{{ace[8]}}</td>
+            <td></td>
+            <td>{{ace[15]}}</td>
+            <td>{{ace[16]}}</td>
+            <td>{{ace[17]}}</td>
+            <td>
+                <a href="/admin/projects/view/{{ace[0]}}/approve" style="background-color: green;border-radius: 5px; width: 200px;padding: 2px;text-decoration: none;color: aliceblue;">Approve</a>
+            </td>
+            <td>
+                <a href="#" style="background-color: rgb(255, 0, 0);border-radius: 5px; width: 200px;padding: 2px;text-decoration: none;color: aliceblue;">Reject</a>
+            </td>
+        </tr>
+      {%endfor%}
+    </table>
+    
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <div class="flash">{{ message }}
+                <a href="javascript:void(0)">X</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+{%endblock%}

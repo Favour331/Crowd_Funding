@@ -1,0 +1,5 @@
+x=10
+y=5
+if x>y:
+    print(y+x)
+print(x-y)

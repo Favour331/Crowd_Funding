@@ -1,0 +1,47 @@
+{%extends 'base.html'%}
+{%block edit%}
+    
+    <form action="/projects/{{roll[0]}}/update" method='POST' style="display:grid;width: 70%;padding: 2%;place-self: center;background: #f4e3a2;" enctype="multipart/form-data">
+        {%for rows in roll%}
+            <label for="">Title</label>
+            <input type="text" name="title" required value="{{rows[2]}}">
+            <select name="select" id="">
+                <option value="art">Art</option>
+                <option value="technology">Technology</option>
+                <option value="fashion">Fashion</option>
+                <option value="design">Design</option>
+                <option value="business">Business</option>
+                <option value="music">Music</option>
+                <option value="education">Education</option>
+            </select>
+            <label for="">Short description</label>
+            <input type="text" name="short" value="{{rows[5]}}">
+            <label for="">Description</label>
+            <textarea name="more" id="" placeholder="{{rows[4]}}"></textarea>
+            <label for="">Funding Goal</label>
+            <p>Amount needed for the project</p>
+            <input type="number" name="goal" value="{{rows[7]}}">
+            <label for="">Upload image of your project</label>
+            <input type="file" name="image" id="" accept="image/*" style="width: 200px;">
+            <label for="">Risks Involve</label>
+            <textarea name="risks" id="" placeholder="{{rows[14]}}"></textarea>
+            <label for="">Rewards</label>
+            <input type="text" name="reward" value="{{rows[15]}}">
+            <label for="">Deadline</label>
+            <input type="date" name="end_date" id="">
+            <button style="margin-top: 1%;" type="submit">Submit</button>
+        {%endfor%}
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <div class="flash">{{ message }}
+                <a href="javascript:void(0)">X</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+{%endblock%}

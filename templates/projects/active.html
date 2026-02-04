@@ -1,0 +1,30 @@
+
+    {% for ace in roll %}
+      <a href="/projects/view/{{ace[0]}}" style="margin: 2cm;color: black;">  
+        <table style="background-color: rgba(0, 0, 0, 0.301);">
+          <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Status</th>
+          </tr>
+          <tr>
+            <td>{{ace[2]}}</td>
+            <td>{{ace[4]}}</td>
+            <td>{{ace[17]}}</td>
+          </tr>
+        </table>
+      </a>
+    {%endfor%}
+
+  
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <div class="flash">{{ message }}
+                <a href="javascript:void(0)">X</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}

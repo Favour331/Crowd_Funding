@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/base.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/boot.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='js/boot.js')}}">
+    
+</head>
+<body>
+    <div class="container-fluid p-2 fixed-top" id="head">
+        <nav class="container d-flex">
+            <div class="m-2">
+                {% for rows in row%}
+                    <h6>Welcome</h6>
+                    <h3 style="font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;">{{rows[1]}}</h3>
+                {% endfor %}
+            </div>
+            <ul class="d-flex mt-3">
+                <li><a href="projects/see">Projects</a></li>
+                <li><a href="#">Tracker</a></li>
+                <li><a href="#">Rewards</a></li>
+                <li><a href="#">Support</a></li>
+            </ul>
+        </nav>
+    </div>
+    <main>
+        {%block dash%}{%endblock%}
+    </main>
+</body>
+</html>

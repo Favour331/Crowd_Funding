@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block dash %}
+
+<style>
+    .projects-container { max-width:1150px; margin: 24px auto; padding: 0 16px; }
+    .projects-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; flex-wrap:wrap; }
+    .projects-title { font-size:22px; font-weight:700; color:#111827; }
+    .projects-controls { display:flex; align-items:center; }
+    .filters-form { display:flex; gap:8px; align-items:center; background:#fff; padding:8px; border-radius:10px; border:1px solid #eef2f7; }
+    .filter-input { padding:8px 10px; border:1px solid #e6edf3; border-radius:8px; min-width:180px; }
+    .filter-select { padding:8px 10px; border:1px solid #e6edf3; border-radius:8px; background:#fff; }
+    @media (max-width:640px){ .filters-form { width:100%; flex-wrap:wrap; } .filter-input{ flex:1 1 100%; } .filter-select{ flex:1 1 48%; } .filters-form .btn-link, .filters-form .btn { flex:1 1 auto; } }
+    .projects-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; justify-items: center;}
+    @media (max-width:1000px){ .projects-grid{ grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width:640px){ .projects-grid{ grid-template-columns: 1fr; } }
+
+    .card { background: #fff; border-radius:6px; box-shadow: 0 6px 18px rgba(17,24,39,0.06); padding:16px; display:flex; flex-direction:column; height:100%; }
+    .card-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+    .card-title { font-size:18px; font-weight:700; color:#0f172a; margin:0 0 6px 0; }
+    .card-sub { color:#64748b; font-size:13px; }
+
+    .card-desc { color:#334155; margin-top:10px; font-size:14px; line-height:1.5; flex:1; }
+
+    .card-meta { display:flex; gap:12px; align-items:center; margin-top:12px; flex-wrap:wrap; }
+    .badge { padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px; color:#0f172a; background:#eef2ff; }
+    .stat { font-size:13px; color:#475569; }
+
+    .progress-wrap { margin-top:12px; background:#f1f5f9; border-radius:8px; overflow:hidden; height:10px; }
+    .progress-bar { height:100%; background:linear-gradient(90deg,#06b6d4,#4f46e5); width:0%; transition:width .6s ease; }
+
+    .card-footer { display:flex; justify-content:space-between; align-items:center; margin-top:16px; }
+    .btn-link { text-decoration:none; color:#fff; background:linear-gradient(90deg,#4f46e5,#06b6d4); padding:9px 14px; border-radius:8px; font-weight:700; }
+
+    .status { padding:6px 10px; border-radius:8px; font-weight:700; font-size:12px; }
+    .status.active { background:#dcfce7; color:#166534; }
+    .status.pending { background:#fff7ed; color:#92400e; }
+    .status.draft { background:#f1f5f9; color:#334155; }
+    .status.rejected, .status.failed { background:#fee2e2; color:#991b1b; }
+
+    .empty-state { text-align:center; padding:40px; color:#64748b; }
+
+    .flash { background:#fff7ed; padding:10px 12px; border-radius:8px; border:1px solid #fde3a7; color:#92400e; margin-bottom:10px; }
+</style>
+
+<div class="projects-container">
+    <div class="projects-header">
+        <div class="projects-title">Projects</div>
+        <div class="projects-controls">
+            <form id="filtersForm" class="filters-form" action="/projects/list" method="GET" role="search">
+                <input type="search" name="q" placeholder="Search projects..." value="{{ request.args.get('q','') }}" class="filter-input" aria-label="Search projects">
+
+                <select name="category" class="filter-select" aria-label="Filter by category">
+                    <option value="">All categories</option>
+                    <option value="art" {% if request.args.get('category') == 'art' %}selected{% endif %}>Art</option>
+                    <option value="film" {% if request.args.get('category') == 'film' %}selected{% endif %}>Film</option>
+                    <option value="music" {% if request.args.get('category') == 'music' %}selected{% endif %}>Music</option>
+                    <option value="games" {% if request.args.get('category') == 'games' %}selected{% endif %}>Games</option>
+                    <option value="tech" {% if request.args.get('category') == 'tech' %}selected{% endif %}>Technology</option>
+                    <option value="other" {% if request.args.get('category') == 'other' %}selected{% endif %}>Other</option>
+                </select>
+
+                <select name="status" class="filter-select" aria-label="Filter by status">
+                    <option value="">Any status</option>
+                    <option value="active" {% if request.args.get('status') == 'active' %}selected{% endif %}>Active</option>
+                    <option value="pending_review" {% if request.args.get('status') == 'pending_review' %}selected{% endif %}>Pending Review</option>
+                    <option value="draft" {% if request.args.get('status') == 'draft' %}selected{% endif %}>Draft</option>
+                    <option value="successful" {% if request.args.get('status') == 'successful' %}selected{% endif %}>Successful</option>
+                </select>
+
+                <select name="sort" class="filter-select" aria-label="Sort projects">
+                    <option value="newest" {% if request.args.get('sort') == 'newest' %}selected{% endif %}>Newest</option>
+                    <option value="most_funded" {% if request.args.get('sort') == 'most_funded' %}selected{% endif %}>Most Funded</option>
+                    <option value="most_backers" {% if request.args.get('sort') == 'most_backers' %}selected{% endif %}>Most Backers</option>
+                </select>
+
+                <button type="submit" class="btn-link">Apply</button>
+                <button type="button" class="btn btn-ghost" id="clearFilters">Clear</button>
+            </form>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash">{{ message }} <a href="javascript:void(0)" onclick="this.parentElement.style.display='none';">✕</a></div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if jects %}
+        <section class="projects-grid">
+            {% for ace in jects %}
+                {% set raised = ace.amount_raised|default(0)|float %}
+                {% set goal = ace.funding_goal|default(0)|float %}
+                {% set pct = ( (raised / goal * 100) if goal > 0 else 0 )|round(0) %}
+
+                <article class="card" aria-labelledby="project-{{ ace.id }}">
+                    <div class="card-head">
+                        <div>
+                            <h3 id="project-{{ ace.id }}" class="card-title">{{ ace.title or 'Untitled Project' }}</h3>
+                            <div class="card-sub">by <a href="/user/profile/{{ ace.creator_id }}" style="color:inherit; text-decoration:underline;">{{ ace.creator_name or ace.username }}</a></div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="badge">{{ ace.category or 'General' }}</div>
+                            <div style="margin-top:8px"> <span class="status {% if ace.status %}{{ ace.status.lower() }}{% endif %}"> {{ ace.status or 'unknown' }} </span></div>
+                        </div>
+                    </div>
+
+                    <p class="card-desc">{{ ace.short_desc or (ace.description[:150] ~ '...') }}</p>
+
+                    <div class="card-meta">
+                        <div class="stat">💰 {{ raised or '0' }} raised</div>
+                        <div class="stat">🎯 Goal: {{ goal or '—' }}</div>
+                        <div class="stat">👥 {{ ace.backer_count or 0 }} backers</div>
+                        <div class="stat">❤️ {{ ace.like_count or 0 }}</div>
+                        <div class="stat">💬 {{ ace.comment_count or 0 }}</div>
+                    </div>
+
+                    <div class="progress-wrap" aria-hidden="true">
+                        <div class="progress-bar" style="width: {{ pct }}%"></div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="stat">{{ pct }}% funded</div>
+                        <a class="btn-link" href="/backers/projects/see/{{ ace.id }}">View Details →</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+    {% else %}
+        <div class="empty-state">No projects yet. Start by backing an exciting project!</div>
+    {% endif %}
+</div>
+
+<script>
+    (function(){
+        var clearBtn = document.getElementById('clearFilters');
+        if(!clearBtn) return;
+        clearBtn.addEventListener('click', function(){
+            // Redirect to the clean projects list URL
+            window.location = '/projects/list';
+        });
+    })();
+</script>
+
+{% endblock %}

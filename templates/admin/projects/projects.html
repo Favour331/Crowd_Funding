@@ -1,0 +1,24 @@
+<div>
+    <h2>Pending Projects</h2>
+</div>
+<div>
+    {% if not row %}
+        <h2>There are no pending projects</h2>
+    {% else %}  
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>status</th>
+            </tr>
+            {%for rows in row%}
+                <tr>
+                    <td>{{rows[2]}}</td>
+                    <td>{{rows[4]}}</td>
+                    <td>{{rows[17]}}</td>
+                    <td><a href="/admin/projects/view/{{rows[0]}}" style="background-color: green;border-radius: 5px; width: 200px;padding: 2px;text-decoration: none;color: aliceblue;">View</a></td>
+                </tr>
+            {%endfor%}
+        </table>
+    {%endif%}
+</div>

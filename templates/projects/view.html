@@ -1,0 +1,58 @@
+{% extends 'base.html'%}
+{%block view%}
+    <div style="margin-bottom: 2rem;">
+        <a href="/projects/edit" class="btn btn-primary">
+            ✎ Edit Project
+        </a>
+    </div>
+      
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Short Description</th>
+                    <th>Story</th>
+                    <th>Risk & Challenges</th>
+                    <th>Funding Goal</th>
+                    <th>Amount Raised</th>
+                    <th>Image</th>
+                    <th>Rewards</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ace in roll %}
+                    <tr>
+                        <td>{{ace[2]}}</td>
+                        <td>{{ace[4]}}</td>
+                        <td>{{ace[5]}}</td>
+                        <td>{{ace[13]}}</td>
+                        <td>{{ace[14]}}</td>
+                        <td>${{ace[7]}}</td>
+                        <td>${{ace[8]}}</td>
+                        <td>{% if ace[9] %}<span style="color: var(--secondary-color);">✓</span>{% endif %}</td>
+                        <td>{{ace[15]}}</td>
+                        <td>{{ace[16]}}</td>
+                        <td><span class="status-badge">{{ace[17]}}</span></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <div class="flash">
+                        {{ message }}
+                        <a href="javascript:void(0)" onclick="this.parentElement.style.display='none';">✕</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{%endblock%}

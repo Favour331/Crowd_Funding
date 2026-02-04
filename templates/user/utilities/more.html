@@ -1,0 +1,123 @@
+<div class="project-page">
+    <style>
+        .project-page { display:flex; justify-content:center; background:#f4f6fb; padding:30px 0; }
+        .project-wrap { width:100%; max-width:1000px; }
+        .project-card { background:#fff; border-radius:10px; box-shadow:0 6px 18px rgba(20,30,50,0.08); padding:24px; margin-bottom:20px; }
+        .project-meta { display:flex; gap:12px; flex-wrap:wrap; align-items:center; font-size:14px; color:#58606a; }
+        .project-header { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; }
+        .project-title { font-size:22px; font-weight:700; color:#1f2937; margin:0; }
+        .project-sub { color:#6b7280; margin-top:6px; font-size:14px; }
+        .creator-link { color:#111827; text-decoration:none; font-weight:600; }
+        .project-body { margin-top:18px; color:#374151; line-height:1.6; }
+        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-top:18px; }
+        @media (max-width:720px){ .grid { grid-template-columns:1fr; } .project-header{flex-direction:column; align-items:flex-start;} }
+        .stat { background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #eef2f7; }
+        .stat h4 { margin:0; font-size:12px; color:#6b7280; }
+        .stat p { margin-top:6px; font-weight:700; color:#111827; }
+        .actions { display:flex; gap:12px; align-items:center; }
+        .btn { padding:10px 16px; border-radius:8px; text-decoration:none; font-weight:600; display:inline-block; }
+        .btn-primary { background:linear-gradient(90deg,#4f46e5,#06b6d4); color:#fff; box-shadow:0 6px 16px rgba(79,70,229,0.12); }
+        .btn-secondary { border:1px solid #e6edf3; background:#fff; color:#111827; }
+        .meta-row { display:flex; gap:12px; align-items:center; color:#6b7280; font-size:13px; }
+        .section-title { font-size:18px; font-weight:700; color:#111827; margin-bottom:10px; }
+        .empty { color:#6b7280; }
+        .badge { background:#eef2ff; color:#1e40af; padding:6px 8px; border-radius:6px; font-weight:600; font-size:13px; }
+        .project-footer { display:flex; justify-content:space-between; align-items:center; margin-top:20px; }
+    </style>
+
+    <div class="project-wrap">
+        {% for ace in roll %}
+            <article class="project-card">
+                <div class="project-header">
+                    <div>
+                        <h1 class="project-title">{{ ace.title or 'Untitled Project' }}</h1>
+                        <div class="project-sub">by <a class="creator-link" href="/user/profile/{{ ace.creator_id }}">{{ ace.username }}</a></div>
+                        <div class="meta-row" style="margin-top:8px">
+                            <div class="badge">{{ ace.category or 'General' }}</div>
+                            <div>Goal: <strong>{{ ace.funding_goal or '—' }}</strong></div>
+                            <div>Raised: <strong>{{ ace.amount_raised or '0.00' }}</strong></div>
+                            <div>Status: <strong>{{ ace.status or '—' }}</strong></div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <a class="btn btn-primary" href="#">Back Project</a>
+                        <a class="btn btn-secondary" href="/backers/projects/see/comment/{{ ject }}">Comment</a>
+                        <a class="btn btn-secondary" href="/backers/projects/see/{{ backer }}/like/{{ ject }}">Like</a>
+                    </div>
+                </div>
+
+                <div class="project-body">
+                    <h3 class="section-title">Description</h3>
+                    <p>{{ ace.description or 'No description provided.' }}</p>
+
+                    <div class="grid">
+                        <div class="stat">
+                            <h4>Risks & Challenges</h4>
+                            <p>{{ ace.risk_challenges or 'Not specified.' }}</p>
+                        </div>
+                        <div class="stat">
+                            <h4>Rewards</h4>
+                            <p>{{ ace.rewards or 'No rewards listed.' }}</p>
+                        </div>
+                        <div class="stat">
+                            <h4>Timeline</h4>
+                            <p>Started: {{ ace.created_at or '—' }}<br>
+                            Deadline: <span class="deadline">{{ ace.deadline or '—' }}</span><br>
+                            Remaining: <span class="remaining" data-deadline="{{ ace.deadline }}">--</span></p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="project-footer">
+                    <div class="project-meta">Project ID: <strong>{{ ace.id }}</strong></div>
+                    <div class="project-meta">Last updated: {{ ace.created_at or '—' }}</div>
+                </div>
+            </article>
+        {% else %}
+            <div class="project-card">
+                <p class="empty">No project details available.</p>
+            </div>
+        {% endfor %}
+
+    </div>
+
+    <script>
+    (function(){
+        function parseDeadline(ds){
+            if(!ds) return null;
+            var s = ds.toString().trim();
+            // normalize 'YYYY-MM-DD HH:MM:SS' to 'YYYY-MM-DDTHH:MM:SS' for reliable parsing
+            if(s.indexOf(' ') > -1 && s.indexOf('T') === -1){ s = s.replace(' ', 'T'); }
+            var d = new Date(s);
+            if(isNaN(d.getTime())){ try{ d = new Date(s + 'T00:00:00'); }catch(e){ return null; } }
+            return d;
+        }
+
+        function updateCountdown(){
+            var elems = document.querySelectorAll('.remaining[data-deadline]');
+            elems.forEach(function(el){
+                var ds = el.getAttribute('data-deadline');
+                if(!ds){ el.textContent = '—'; return; }
+                var dd = parseDeadline(ds);
+                if(!dd){ el.textContent = '—'; return; }
+                var now = new Date();
+                var diff = dd - now;
+                if(diff <= 0){ el.textContent = 'Deadline passed'; el.classList.add('expired'); return; }
+                var days = Math.floor(diff / (1000*60*60*24));
+                var hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+                var minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
+                var parts = [];
+                if(days > 0) parts.push(days + 'd');
+                if(hours > 0) parts.push(hours + 'h');
+                parts.push(minutes + 'm');
+                el.textContent = parts.join(' ');
+            });
+        }
+
+        // initial update and refresh every minute
+        updateCountdown();
+        setInterval(updateCountdown, 60 * 1000);
+    })();
+    </script>
+
+</div>

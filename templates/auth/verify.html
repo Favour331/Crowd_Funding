@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        alert("{{ver}} is your verification code")
+    </script>
+    <form action="/verify" method="post">
+      <label>Enter verification code</label>
+      <input type="text" name="numb" required />
+      <button type="submit">Verify</button>
+    </form>
+    <p>Code sent: {{ ver }}</p>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <div class="flash" style="font-size: 12px; color: red;">{{ message }}
+                <a href="javascript:void(0)">X</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>

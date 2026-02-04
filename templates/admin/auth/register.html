@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base</title>
+</head>
+<body>
+    <form action="/admin/register" method="POST">
+        <label for="">First Name</label>
+        <input type="text" name="fess_name" aria-required="true">
+        <label for="">Last Name</label>
+        <input type="text" name="last" aria-required="true">
+        <label for="">Email</label>
+        <input type="email" name="email" aria-required="true">
+        <label for="">Phone Number</label>
+        <input type="number" name="number">
+        <button type="submit">Submit</button>
+    </form>
+    <a href="/admin/login">To Login</a>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <div class="flash">{{ message }}
+                <a href="javascript:void(0)">X</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>
