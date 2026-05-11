@@ -208,6 +208,10 @@ def user_profile_edit():
     return render_template('user/profile/edit.html')
 
 ###################     ADMIN API       #####################
+@user_bp.route('/to_admin')
+def to_admin():
+    return render_template('admin/auth/register.html')
+
 @user_bp.route('/admin/register', methods=['POST','GET'])
 def reg_admin():
     if request.method == 'POST':
