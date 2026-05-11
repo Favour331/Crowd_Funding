@@ -1,22 +1,43 @@
-import mysql.connector
-from mysql.connector import Error
+import mysql
 
-def create_projects_table():
-    conn = None
-    cur = None
-    try:
-        conn = mysql.connector.connect(host='localhost', user='root', passwd='', database='crowd_funding')
-        project = conn.cursor()
-        project.execute("""
-        CREATE TABLE IF NOT EXISTS projects (id INT PRIMARY KEY AUTO_INCREMENT,creator_id INT NOT NULL,title VARCHAR(255) UNIQUE NOT NULL,slug VARCHAR(300) NOT NULL,description TEXT NOT NULL,short_desc VARCHAR(500),category ENUM('tech','art','design','food','games','music','publishing','film','fashion','other') NOT NULL,funding_goal DECIMAL(15,2) NOT NULL,amount_raised DECIMAL(15,2) DEFAULT 0.00,currency VARCHAR(3) DEFAULT 'USD',main_image_url VARCHAR(500),video_url VARCHAR(500),gallery_images JSON,story LONGTEXT,risk_challenges TEXT,rewards JSON,deadline DATE NOT NULL,status ENUM('pending_review','draft','active','successful','failed','cancelled') DEFAULT 'draft',is_featured TINYINT(1) DEFAULT 0,approved_at DATETIME NULL,approved_by INT NULL,rejection_reason TEXT,backer_count INT DEFAULT 0,view_count INT DEFAULT 0,created_at DATETIME DEFAULT CURRENT_TIMESTAMP,updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,launched_at DATETIME NULL,completed_at DATETIME NULL,CONSTRAINT fk_projects_creator FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,CONSTRAINT fk_projects_approved_by FOREIGN KEY (approved_by) REFERENCES users(id) ON DELETE SET NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-        """)
-        conn.commit()
-    except Error as e:
-        print("Error creating projects table:", e)
-    finally:
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()
+from db.connection import get_db
 
-# Optionally call create_projects_table() from your app start-up code (not at import time)
+def fetch_user_by_id(user_id):
+    """Fetch user profile data"""
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+    cur.execute("SELECT users.*,projects.status as stats,projects.* from users left join projects on users.Id = projects.creator_id WHERE users.Id = %s", (user_id,))
+    result = cur.fetchone()
+    cur.close()
+    conn.close()
+    return result
+
+def fetch_user_projects(user_id):
+    """Fetch projects for a specific user with aggregated data"""
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+    cur.execute("""
+        SELECT p.*,COALESCE(SUM(b.amount), 0) as current_amount,COUNT(DISTINCT b.project_id) as backers_count,DATEDIFF(p.deadline, CURDATE()) as days_remaining FROM projects p LEFT JOIN backings b ON b.project_Id = p.Id WHERE p.creator_id = %s GROUP BY p.Id ORDER BY p.created_at DESC """, (user_id,))
+    result = cur.fetchall()
+    cur.close()
+    conn.close()
+    return result
+
+def fetch_all_projects():
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+    cur.execute("""SELECT p.*,COUNT(DISTINCT c.Id) AS comment_count,COUNT(DISTINCT l.Id) AS like_count,u.First_name AS creator_name FROM projects p LEFT JOIN comments c ON c.project_id = p.Id LEFT JOIN likes l ON l.project_id = p.Id LEFT JOIN users u ON u.Id = p.creator_id GROUP BY p.Id""")
+    projects = cur.fetchall()
+    cur.close()
+    conn.close()
+    return projects
+
+def fetch_each_project(project_id):
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+    cur.execute("Select p.*,u.* From projects p left join users u on u.Id = p.creator_id where p.Id = %s group by p.creator_id",(project_id,))
+    row = cur.fetchall()
+    conn.commit()
+    cur.close()
+    conn.close()
+    return row

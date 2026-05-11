@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Your Role | Crowd Funding{% endblock %}
+
+{% block content %}
+<style>
+    .choose-page { max-width: 900px; margin: 0 auto; padding: 60px 20px; }
+    .choose-card { background:#fff; border-radius:24px; padding:48px; box-shadow:0 18px 40px rgba(15,23,42,0.08); text-align:center; }
+    .choose-card h1 { margin:0 0 16px; font-size:2.5rem; color:#111827; }
+    .choose-card p { margin:0 0 40px; color:#475569; line-height:1.7; font-size:1.1rem; }
+    .roles-grid { display:grid; grid-template-columns:1fr 1fr; gap:32px; }
+    .role-card { background:#f8fafc; border:1px solid #e5e7eb; border-radius:20px; padding:32px; transition:transform .2s ease, box-shadow .2s ease; }
+    .role-card:hover { transform:translateY(-4px); box-shadow:0 12px 24px rgba(15,23,42,0.12); }
+    .role-icon { font-size:3rem; margin-bottom:16px; }
+    .role-card h2 { margin:0 0 12px; font-size:1.75rem; color:#111827; }
+    .role-card p { margin:0 0 24px; color:#64748b; line-height:1.6; }
+    .role-card .btn { width:100%; padding:14px 24px; background:linear-gradient(90deg,#4f46e5,#06b6d4); color:#fff; text-decoration:none; border-radius:12px; font-weight:700; font-size:1rem; transition:background .2s ease; }
+    .role-card .btn:hover { background:linear-gradient(90deg,#4338ca,#0891b2); }
+    @media (max-width:768px) { .roles-grid { grid-template-columns:1fr; } .choose-card { padding:32px; } }
+</style>
+
+<section class="choose-page">
+    <div class="choose-card">
+        <h1>Join Crowd Funding</h1>
+        <p>Select your role to get started. Whether you're launching innovative projects or supporting creative endeavors, we're here to connect ideas with impact.</p>
+
+        <div class="roles-grid">
+            <div class="role-card">
+                <div class="role-icon">🚀</div>
+                <h2>Creator</h2>
+                <p>Launch and manage crowdfunding campaigns. Share your vision, set funding goals, and engage with backers to bring your innovative ideas to life.</p>
+                <a href="/register?role=creator" class="btn">Register as Creator</a>
+            </div>
+
+            <div class="role-card">
+                <div class="role-icon">💰</div>
+                <h2>Backer</h2>
+                <p>Support creative projects that inspire you. Discover exciting campaigns, pledge funds, and receive rewards while helping creators achieve their goals.</p>
+                <a href="/register?role=backer" class="btn">Register as Backer</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

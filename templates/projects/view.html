@@ -33,7 +33,15 @@
                         <td>{{ace[14]}}</td>
                         <td>${{ace[7]}}</td>
                         <td>${{ace[8]}}</td>
-                        <td>{% if ace[9] %}<span style="color: var(--secondary-color);">✓</span>{% endif %}</td>
+                        <td>
+                            {% if ace[9] %}
+                                {% if ace[9] is string %}
+                                    <img src="{{ ace[9] }}" alt="Project image" style="max-width:160px; border-radius:12px; display:block;" />
+                                {% else %}
+                                    <img src="data:image/jpeg;base64,{{ ace[9]|b64encode }}" alt="Project image" style="max-width:160px; border-radius:12px; display:block;" />
+                                {% endif %}
+                            {% endif %}
+                        </td>
                         <td>{{ace[15]}}</td>
                         <td>{{ace[16]}}</td>
                         <td><span class="status-badge">{{ace[17]}}</span></td>

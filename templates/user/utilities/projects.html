@@ -2,44 +2,252 @@
 {% block dash %}
 
 <style>
-    .projects-container { max-width:1150px; margin: 24px auto; padding: 0 16px; }
-    .projects-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; flex-wrap:wrap; }
-    .projects-title { font-size:22px; font-weight:700; color:#111827; }
-    .projects-controls { display:flex; align-items:center; }
-    .filters-form { display:flex; gap:8px; align-items:center; background:#fff; padding:8px; border-radius:10px; border:1px solid #eef2f7; }
-    .filter-input { padding:8px 10px; border:1px solid #e6edf3; border-radius:8px; min-width:180px; }
-    .filter-select { padding:8px 10px; border:1px solid #e6edf3; border-radius:8px; background:#fff; }
-    @media (max-width:640px){ .filters-form { width:100%; flex-wrap:wrap; } .filter-input{ flex:1 1 100%; } .filter-select{ flex:1 1 48%; } .filters-form .btn-link, .filters-form .btn { flex:1 1 auto; } }
-    .projects-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; justify-items: center;}
-    @media (max-width:1000px){ .projects-grid{ grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width:640px){ .projects-grid{ grid-template-columns: 1fr; } }
+    .projects-container {
+        max-width:1200px;
+        margin: 28px auto;
+        padding: 26px;
+        background: rgba(255,255,255,0.98);
+        border-radius: 24px;
+        box-shadow: 0 24px 60px rgba(15,23,42,0.08);
+        border: 1px solid rgba(15,23,42,0.06);
+    }
+    .projects-header {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:28px;
+        gap:16px;
+        flex-wrap:wrap;
+    }
+    .projects-title {
+        font-size:2.6rem;
+        font-weight:800;
+        color:#0f172a;
+        margin:0;
+        letter-spacing:-0.04em;
+    }
+    .projects-controls {
+        display:flex;
+        align-items:center;
+        width:100%;
+        justify-content:flex-end;
+    }
+    .filters-form {
+        display:flex;
+        gap:12px;
+        align-items:center;
+        flex-wrap:wrap;
+        background:#f8fafc;
+        padding:14px;
+        border-radius:18px;
+        border:1px solid #e2e8f0;
+        width:100%;
+    }
+    .filter-input,
+    .filter-select {
+        padding:12px 14px;
+        border:1px solid #cbd5e1;
+        border-radius:14px;
+        background:#fff;
+        color:#0f172a;
+        min-width:180px;
+        transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    .filter-input:focus,
+    .filter-select:focus {
+        outline:none;
+        border-color:#4f46e5;
+        box-shadow:0 0 0 4px rgba(79,70,229,0.14);
+    }
+    .btn-link,
+    .btn-ghost {
+        border:none;
+        border-radius:14px;
+        cursor:pointer;
+        transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .btn-link {
+        text-decoration:none;
+        color:#fff;
+        background:linear-gradient(90deg,#4f46e5,#06b6d4);
+        padding:12px 18px;
+        font-weight:700;
+        box-shadow:0 14px 30px rgba(79,70,229,0.18);
+    }
+    .btn-link:hover {
+        transform:translateY(-1px);
+        box-shadow:0 18px 40px rgba(79,70,229,0.22);
+    }
+    .btn-ghost {
+        background:#fff;
+        color:#0f172a;
+        border:1px solid #cbd5e1;
+        padding:11px 18px;
+    }
+    .btn-ghost:hover {
+        background:#f1f5f9;
+    }
+    @media (max-width:640px){
+        .filters-form { width:100%; }
+        .filter-input{ flex:1 1 100%; }
+        .filter-select{ flex:1 1 48%; }
+        .filters-form .btn-link, .filters-form .btn-ghost { flex:1 1 auto; }
+    }
 
-    .card { background: #fff; border-radius:6px; box-shadow: 0 6px 18px rgba(17,24,39,0.06); padding:16px; display:flex; flex-direction:column; height:100%; }
-    .card-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
-    .card-title { font-size:18px; font-weight:700; color:#0f172a; margin:0 0 6px 0; }
-    .card-sub { color:#64748b; font-size:13px; }
+    .projects-grid {
+        display:grid;
+        grid-template-columns: repeat(2, minmax(320px, 1fr));
+        column-gap:24px;
+        row-gap:30px;
+        gap:24px;
+        width:auto;
+        align-items:start;
+        grid-auto-rows:minmax(0, auto);
+    }
+    @media (max-width:1000px){ .projects-grid{ grid-template-columns: 1fr; } }
+    @media (max-width:640px){ .projects-grid{ grid-template-columns: 1fr; gap:24px; } }
 
-    .card-desc { color:#334155; margin-top:10px; font-size:14px; line-height:1.5; flex:1; }
+    .card {
+        background: #fff;
+        border-radius:22px;
+        box-shadow: 0 16px 40px rgba(15,23,42,0.08);
+        padding:24px;
+        display:flex;
+        flex-direction:column;
+        height:100%;
+        width:auto;
+        transition:transform .25s ease, box-shadow .25s ease;
+        border:1px solid rgba(15,23,42,0.06);
+        min-height: 220px;
+    }
+    .card:hover {
+        transform:translateY(-4px);
+        box-shadow:0 24px 50px rgba(15,23,42,0.12);
+    }
+    .card-head {
+        display:flex;
+        justify-content:space-between;
+        gap:16px;
+        align-items:flex-start;
+    }
+    .card-image {
+        margin-top:18px;
+        border-radius:18px;
+        overflow:hidden;
+        min-height:200px;
+        background:#f8fafc;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+    .card-image img {
+        width:100%;
+        height:auto;
+        display:block;
+        object-fit:cover;
+    }
+    .card-title {
+        font-size:1.45rem;
+        font-weight:800;
+        color:#111827;
+        margin:0 0 8px 0;
+    }
+    .card-sub {
+        color:#64748b;
+        font-size:0.95rem;
+        line-height:1.6;
+    }
+    .card-sub a {
+        color:#4f46e5;
+        text-decoration:none;
+        font-weight:700;
+    }
+    .card-sub a:hover {
+        text-decoration:underline;
+    }
 
-    .card-meta { display:flex; gap:12px; align-items:center; margin-top:12px; flex-wrap:wrap; }
-    .badge { padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px; color:#0f172a; background:#eef2ff; }
-    .stat { font-size:13px; color:#475569; }
+    .card-desc {
+        color:#334155;
+        margin-top:18px;
+        font-size:1.05rem;
+        line-height:1.75;
+        font-weight:600;
+        flex:1;
+    }
 
-    .progress-wrap { margin-top:12px; background:#f1f5f9; border-radius:8px; overflow:hidden; height:10px; }
-    .progress-bar { height:100%; background:linear-gradient(90deg,#06b6d4,#4f46e5); width:0%; transition:width .6s ease; }
+    .card-meta {
+        display:flex;
+        gap:14px;
+        align-items:center;
+        margin-top:18px;
+        flex-wrap:wrap;
+    }
+    .badge {
+        padding:8px 12px;
+        border-radius:999px;
+        font-weight:700;
+        font-size:12px;
+        color:#0f172a;
+        background:#eef2ff;
+    }
+    .stat {
+        font-size:0.95rem;
+        color:#475569;
+    }
 
-    .card-footer { display:flex; justify-content:space-between; align-items:center; margin-top:16px; }
-    .btn-link { text-decoration:none; color:#fff; background:linear-gradient(90deg,#4f46e5,#06b6d4); padding:9px 14px; border-radius:8px; font-weight:700; }
+    .progress-wrap {
+        margin-top:18px;
+        background:#e2e8f0;
+        border-radius:999px;
+        overflow:hidden;
+        height:12px;
+    }
+    .progress-bar {
+        height:100%;
+        background:linear-gradient(90deg,#06b6d4,#4f46e5);
+        width:0%;
+        transition:width .6s ease;
+    }
 
-    .status { padding:6px 10px; border-radius:8px; font-weight:700; font-size:12px; }
+    .card-footer {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-top:22px;
+        flex-wrap:wrap;
+        gap:12px;
+    }
+    .status {
+        padding:8px 12px;
+        border-radius:999px;
+        font-weight:700;
+        font-size:0.82rem;
+        text-transform:capitalize;
+    }
     .status.active { background:#dcfce7; color:#166534; }
     .status.pending { background:#fff7ed; color:#92400e; }
     .status.draft { background:#f1f5f9; color:#334155; }
     .status.rejected, .status.failed { background:#fee2e2; color:#991b1b; }
 
-    .empty-state { text-align:center; padding:40px; color:#64748b; }
+    .empty-state {
+        text-align:center;
+        padding:40px;
+        color:#0d0d0e;
+        font-size:1.5rem;
+        background:#f8fafc;
+        border-radius:18px;
+        border:1px solid #e2e8f0;
+    }
 
-    .flash { background:#fff7ed; padding:10px 12px; border-radius:8px; border:1px solid #fde3a7; color:#92400e; margin-bottom:10px; }
+    .flash {
+        background:#fff7ed;
+        padding:12px 16px;
+        border-radius:14px;
+        border:1px solid #fde3a7;
+        color:#92400e;
+        margin-bottom:14px;
+        font-weight:600;
+    }
 </style>
 
 <div class="projects-container">
@@ -98,13 +306,23 @@
                     <div class="card-head">
                         <div>
                             <h3 id="project-{{ ace.id }}" class="card-title">{{ ace.title or 'Untitled Project' }}</h3>
-                            <div class="card-sub">by <a href="/user/profile/{{ ace.creator_id }}" style="color:inherit; text-decoration:underline;">{{ ace.creator_name or ace.username }}</a></div>
+                            <div class="card-sub">by <a href="/user/profile/{{ ace.creator_id }}" class="author-link">{{ ace.creator_name or ace.username }}</a></div>
                         </div>
                         <div style="text-align:right">
                             <div class="badge">{{ ace.category or 'General' }}</div>
                             <div style="margin-top:8px"> <span class="status {% if ace.status %}{{ ace.status.lower() }}{% endif %}"> {{ ace.status or 'unknown' }} </span></div>
                         </div>
                     </div>
+
+                    {% if ace.main_image_url %}
+                        <div class="card-image">
+                            {% if ace.main_image_url is string %}
+                                <img src="{{ ace.main_image_url }}" alt="{{ ace.title or 'Project image' }}">
+                            {% else %}
+                                <img src="data:image/jpeg;base64,{{ ace.main_image_url|b64encode }}" alt="{{ ace.title or 'Project image' }}">
+                            {% endif %}
+                        </div>
+                    {% endif %}
 
                     <p class="card-desc">{{ ace.short_desc or (ace.description[:150] ~ '...') }}</p>
 
@@ -128,7 +346,7 @@
             {% endfor %}
         </section>
     {% else %}
-        <div class="empty-state">No projects yet. Start by backing an exciting project!</div>
+        <div class="empty-state">There are no projects to display. Come back later!</div>
     {% endif %}
 </div>
 
@@ -138,7 +356,7 @@
         if(!clearBtn) return;
         clearBtn.addEventListener('click', function(){
             // Redirect to the clean projects list URL
-            window.location = '/projects/list';
+            window.location = '/projects';
         });
     })();
 </script>

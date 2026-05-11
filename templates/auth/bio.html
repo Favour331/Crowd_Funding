@@ -1,37 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects</title>
-</head>
-<body>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flash-messages">
-          {% for message in messages %}
-            <div class="flash">{{ message }}
-                <a href="javascript:void(0)">X</a>
+{% extends "base.html" %}
+
+{% block title %}Complete your profile | Crowd Funding{% endblock %}
+
+{% block content %}
+<style>
+    .bio-page { max-width: 640px; margin: 0 auto; padding: 40px 20px; }
+    .bio-card { background:#fff; border-radius:24px; padding:34px; box-shadow:0 18px 40px rgba(15,23,42,0.08); }
+    .bio-card h1 { margin:0 0 16px; font-size:2.25rem; color:#111827; }
+    .bio-card p { margin:0 0 24px; color:#475569; line-height:1.7; }
+    .bio-form { display:grid; gap:18px; }
+    .bio-form label { display:block; font-weight:700; margin-bottom:10px; color:#334155; }
+    .bio-form input[type="tel"], .bio-form input[type="file"] { width:100%; padding:14px 16px; border:1px solid #cbd5e1; border-radius:14px; background:#f8fafc; color:#0f172a; font-size:1rem; }
+    .bio-form input[type="file"] { padding:12px 12px 10px; }
+    .bio-form input:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 4px rgba(99,102,241,0.12); background:#fff; }
+    .bio-form .hint { font-size:.95rem; color:#64748b; }
+    .bio-actions { margin-top:20px; }
+    .bio-actions .btn { width:100%; }
+    .flash-messages { margin-bottom:20px; }
+    .flash { background:#fee2e2; border:1px solid #fca5a5; color:#b91c1c; border-radius:12px; padding:14px 18px; }
+</style>
+
+<section class="bio-page">
+    <div class="bio-card">
+        <h1>Complete your profile</h1>
+        <p>Upload a profile picture and enter your phone number so your account is fully set up. The profile picture is required.</p>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="flash">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form action="/bio" method="POST" enctype="multipart/form-data" class="bio-form">
+            <div>
+                <label for="profilePicture">Profile picture</label>
+                <input id="profilePicture" name="profile_picture" type="file" accept="image/png,image/jpeg,image/gif" required>
+                <p class="hint">Accepted formats: PNG, JPG, JPEG, GIF.</p>
             </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-    <form action="/bio" method="POST" style="display: grid;width: 30%;place-self: center;">
-        <h3>Phone Number</h3>
-        <input type="tel" name="telle">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flash-messages">
-          {% for message in messages %}
-            <div class="flash" style="font-size: 12px; color: red;">{{ message }}
-                <a href="javascript:void(0)">X</a>
+
+            <div>
+                <label for="telle">Phone number</label>
+                <input id="telle" name="telle" type="tel" placeholder="e.g. +1234567890" required>
+                <p class="hint">We’ll use this number to verify your account.</p>
             </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-        <button type="submit">Review</button>
-    </form>
-</body>
-</html>
+
+            <div class="bio-actions">
+                <button type="submit" class="btn btn-primary">Continue to verification</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

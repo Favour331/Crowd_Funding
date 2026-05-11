@@ -8,6 +8,8 @@
         .project-title { font-size:22px; font-weight:700; color:#1f2937; margin:0; }
         .project-sub { color:#6b7280; margin-top:6px; font-size:14px; }
         .creator-link { color:#111827; text-decoration:none; font-weight:600; }
+        .project-cover { margin-top:22px; border-radius:18px; overflow:hidden; background:#f8fafc; }
+        .project-cover img { display:block; width:100%; object-fit:cover; }
         .project-body { margin-top:18px; color:#374151; line-height:1.6; }
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-top:18px; }
         @media (max-width:720px){ .grid { grid-template-columns:1fr; } .project-header{flex-direction:column; align-items:flex-start;} }
@@ -18,6 +20,10 @@
         .btn { padding:10px 16px; border-radius:8px; text-decoration:none; font-weight:600; display:inline-block; }
         .btn-primary { background:linear-gradient(90deg,#4f46e5,#06b6d4); color:#fff; box-shadow:0 6px 16px rgba(79,70,229,0.12); }
         .btn-secondary { border:1px solid #e6edf3; background:#fff; color:#111827; }
+        .like-btn { padding:10px 16px; border-radius:8px; background:#fff; border:2px solid #e6edf3; color:#111827; font-weight:600; cursor:pointer; transition:all 0.3s ease; display:inline-block; }
+        .like-btn:hover { border-color:#4f46e5; color:#4f46e5; }
+        .like-btn.liked { background:linear-gradient(90deg,#f43f5e,#ec4899); color:#fff; border-color:#ec4899; }
+        .like-btn:disabled { opacity:0.6; cursor:not-allowed; }
         .meta-row { display:flex; gap:12px; align-items:center; color:#6b7280; font-size:13px; }
         .section-title { font-size:18px; font-weight:700; color:#111827; margin-bottom:10px; }
         .empty { color:#6b7280; }
@@ -30,39 +36,53 @@
             <article class="project-card">
                 <div class="project-header">
                     <div>
-                        <h1 class="project-title">{{ ace.title or 'Untitled Project' }}</h1>
+                        <h1 class="project-title">{{ ace.title }}</h1>
                         <div class="project-sub">by <a class="creator-link" href="/user/profile/{{ ace.creator_id }}">{{ ace.username }}</a></div>
                         <div class="meta-row" style="margin-top:8px">
-                            <div class="badge">{{ ace.category or 'General' }}</div>
-                            <div>Goal: <strong>{{ ace.funding_goal or '—' }}</strong></div>
-                            <div>Raised: <strong>{{ ace.amount_raised or '0.00' }}</strong></div>
-                            <div>Status: <strong>{{ ace.status or '—' }}</strong></div>
+                            <div class="badge">{{ ace.category }}</div>
+                            <div>Goal: <strong>{{ ace.funding_goal }}</strong></div>
+                            <div>Raised: <strong>{{ ace.amount_raised }}</strong></div>
+                            <div>Status: <strong>{{ ace.status }}</strong></div>
                         </div>
                     </div>
                     <div class="actions">
-                        <a class="btn btn-primary" href="#">Back Project</a>
-                        <a class="btn btn-secondary" href="/backers/projects/see/comment/{{ ject }}">Comment</a>
-                        <a class="btn btn-secondary" href="/backers/projects/see/{{ backer }}/like/{{ ject }}">Like</a>
+                        {%if ace.Id == backer%}
+                            <a class="btn btn-secondary" href="/backers/projects/see/comment/{{ ace.id }}">Comment</a>
+                        {%else%}
+                            <button class="btn btn-primary back-project-btn" data-project-id="{{ ace.id }}">Back Project</button>
+                            <a class="btn btn-secondary" href="/backers/projects/see/comment/{{ ace.id }}">Comment</a>
+                            <button class="like-btn" data-url="/like/{{ ace.id }}">Like</button>
+                        {%endif%}
                     </div>
                 </div>
 
+                {% if ace.main_image_url %}
+                    <div class="project-cover">
+                        {% if ace.main_image_url is string %}
+                            <img src="{{ ace.main_image_url }}" alt="{{ ace.title }}">
+                        {% else %}
+                            <img src="data:image/jpeg;base64,{{ ace.main_image_url|b64encode }}" alt="{{ ace.title }}">
+                        {% endif %}
+                    </div>
+                {% endif %}
+
                 <div class="project-body">
                     <h3 class="section-title">Description</h3>
-                    <p>{{ ace.description or 'No description provided.' }}</p>
+                    <p>{{ ace.description }}</p>
 
                     <div class="grid">
                         <div class="stat">
                             <h4>Risks & Challenges</h4>
-                            <p>{{ ace.risk_challenges or 'Not specified.' }}</p>
+                            <p>{{ ace.risk_challenges }}</p>
                         </div>
                         <div class="stat">
                             <h4>Rewards</h4>
-                            <p>{{ ace.rewards or 'No rewards listed.' }}</p>
+                            <p>{{ ace.rewards }}</p>
                         </div>
                         <div class="stat">
                             <h4>Timeline</h4>
-                            <p>Started: {{ ace.created_at or '—' }}<br>
-                            Deadline: <span class="deadline">{{ ace.deadline or '—' }}</span><br>
+                            <p>Started: {{ ace.created_at }}<br>
+                            Deadline: <span class="deadline">{{ ace.deadline }}</span><br>
                             Remaining: <span class="remaining" data-deadline="{{ ace.deadline }}">--</span></p>
                         </div>
                     </div>
@@ -70,17 +90,49 @@
                 </div>
                 <div class="project-footer">
                     <div class="project-meta">Project ID: <strong>{{ ace.id }}</strong></div>
-                    <div class="project-meta">Last updated: {{ ace.created_at or '—' }}</div>
-                </div>
+                    <div class="project-meta">Last updated: {{ ace.created_at }}</div>
+            
             </article>
         {% else %}
-            <div class="project-card">
-                <p class="empty">No project details available.</p>
-            </div>
         {% endfor %}
 
     </div>
 
+    <!-- Back Project Modal -->
+    <div id="backProjectModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:#fff; padding:24px; border-radius:12px; max-width:400px; width:90%; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; color:#111827;">Back This Project</h3>
+                <button id="closeModal" style="background:none; border:none; font-size:24px; cursor:pointer; color:#6b7280;">&times;</button>
+            </div>
+            <form id="form" action="" method="POST">
+                <input type="hidden" name="project_id" id="projectIdInput">
+                <div style="margin-bottom:16px;">
+                    <label for="backerEmail" style="display:block; margin-bottom:8px; font-weight:600; color:#374151;">Email</label>
+                    <input type="email" id="backerEmail" name="email" placeholder="you@example.com" required style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px; font-size:16px;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <label for="pledgeAmount" style="display:block; margin-bottom:8px; font-weight:600; color:#374151;">Payment Amount ($)</label>
+                    <input type="number" id="pledgeAmount" name="amount" min="1" step="0.01" required style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px; font-size:16px;">
+                </div>
+                <button type="submit" id="proceed" class="btn btn-primary" style="width:100%;">Submit Pledge</button>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <div class="flash">
+                                <div>{{ message }}</div>
+                                <a href="javascript:void(0)" onclick="this.parentNode.style.display='none'">✕</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            </form>
+        </div>
+    </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     <script>
     (function(){
         function parseDeadline(ds){
@@ -113,8 +165,134 @@
                 el.textContent = parts.join(' ');
             });
         }
+        document.querySelectorAll('.like-btn').forEach(function(btn){
+            btn.addEventListener('click', function(e){
+                e.preventDefault();
 
-        // initial update and refresh every minute
+                let url = this.dataset.url;
+                let button = this;
+                let isLiked = button.classList.contains('liked');
+                let method = isLiked ? 'DELETE' : 'POST';
+                let loadingText = isLiked ? "Unliking..." : "Liking...";
+
+                // Disable button and show loading state
+                button.disabled = true;
+                button.textContent = loadingText;
+
+                fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => res.json().then(data => ({status: res.status, data: data})))
+                .then(({status, data}) => {
+                    button.disabled = false;
+                    
+                    if(status === 200 && data.success){
+                        if(data.liked){
+                            button.textContent = "Liked ❤️";
+                            button.classList.add('liked');
+                        } else {
+                            button.textContent = "Like";
+                            button.classList.remove('liked');
+                        }
+                    } else if(status === 400) {
+                        // Already liked or not liked
+                        if(data.liked){
+                            button.textContent = "Liked ❤️";
+                            button.classList.add('liked');
+                        } else {
+                            button.textContent = "Like";
+                            button.classList.remove('liked');
+                        }
+                    } else if(status === 401) {
+                        alert(data.message || "Please login to like projects");
+                        button.textContent = "Like";
+                        button.classList.remove('liked');
+                    } else {
+                        alert(data.message || "Failed to process like");
+                        button.textContent = isLiked ? "Liked ❤️" : "Like";
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Something went wrong. Please try again.");
+                    button.disabled = false;
+                    button.textContent = isLiked ? "Liked ❤️" : "Like";
+                });
+            });
+        });
+
+        // Back Project Modal
+        const modal = document.getElementById('backProjectModal');
+        const closeBtn = document.getElementById('closeModal');
+        const backerForm = document.getElementById('form');
+
+        document.querySelectorAll('.back-project-btn').forEach(backBtn => {
+            backBtn.addEventListener('click', function() {
+                modal.style.display = 'flex';
+                document.getElementById('projectIdInput').value = this.dataset.projectId;
+            });
+        });
+
+        if (modal && closeBtn && backerForm) {
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+                backerForm.reset();
+            });
+
+        }
+        
+        document.getElementById('proceed').onclick = function(e) {
+            e.preventDefault();
+            var email = document.getElementById('backerEmail').value;
+            var amountInput = parseFloat(document.getElementById('pledgeAmount').value);
+            if (isNaN(amountInput) || amountInput <= 0) {
+                alert('Please enter a valid pledge amount.');
+                return;
+            }
+            var amount = Math.round(amountInput * 100);
+            var handler = PaystackPop.setup({
+                key: 'pk_test_bf86aac07dc072c2a6bcbf1775c04aa7ea906882', // Paystack test public key
+                email: email,
+                amount: amount,
+                currency: 'NGN',
+                ref: ''+Math.floor((Math.random() * 1000000000) + 1),
+                callback: function(response){
+                    var email = document.getElementById('backerEmail').value;
+                    var amountValue = document.getElementById('pledgeAmount').value;
+                    var projectId = document.getElementById('projectIdInput').value;
+                    var params = new URLSearchParams();
+                    params.append('email', email);
+                    params.append('amount', amountValue);
+                    params.append('project_id', projectId);
+                    params.append('reference', response.reference);
+                    fetch('/backers/projects/new_pledge', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: params.toString()
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.status) {
+                            alert('Payment verified! Your appointment is booked.');
+                            window.location.reload();
+                        } else {
+                            alert('Payment could not be verified: ' + data.message);
+                        }
+                    })
+                    .catch(err => {
+                        alert('Verification error: ' + err);
+                        form.reset();
+                    });
+                },
+                onClose: function(){
+                    alert('Transaction was not completed, window closed.');
+                }
+            });
+            handler.openIframe();
+        }
         updateCountdown();
         setInterval(updateCountdown, 60 * 1000);
     })();

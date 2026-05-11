@@ -1,14 +1,30 @@
-import mysql.connector
-from config import my_db
+from db.connection import get_db
 
-def create_backing_table():
-    try:
-        backings_table = mysql.connector.connect(host='localhost', user='root', passwd='',database='crowd_funding')
-        back = backings_table.cursor()
-        back.execute('Create Table If Not Exists BACKINGS(Id Int Primary Key Auto_Increment, Backer_id Int Not null,Project_Id Int not null, Amount Varchar(255) not null, Reward_tier Varchar(100), reward_desc text, estimated_delivery Date not null, Status Enum("pledge","processing","completed","refunded","cancelled"),is_anonymous Boolean, payment_id int, payment_status Varchar(50), created_at Datetime,updated_at datetime, refunded_at Datetime,CONSTRAINT FOREIGN KEY(Project_Id) REFERENCES PROJECTS(Id) ON DELETE CASCADE,CONSTRAINT FOREIGN KEY(Backer_Id) REFERENCES USERS(Id) ON DELETE CASCADE)')
-        back.close()
-    except mysql.connector.Error as e:
-        print(e)
-    finally:
-        backings_table.close()
-        back.close()
+def fetch_user_by_id(user_id):
+    """Fetch user profile data"""
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+    cur.execute("SELECT users.*,projects.status as stats,projects.* from users left join projects on users.Id = projects.creator_id WHERE users.Id = %s", (user_id,))
+    result = cur.fetchone()
+    cur.close()
+    conn.close()
+    return result 
+
+def add_new_backing(user_id, project_id, amount, email):
+    """Add a new backing to the database"""
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute('INSERT INTO backings (user_id, project_id, amount, user_email,created_at) VALUES (%s, %s, %s, %s, NOW())',
+                (user_id, project_id, amount, email))
+    cur.execute('UPDATE `projects` SET `amount_raised` = `amount_raised` + %s WHERE `projects`.`id` = %s', (amount, project_id))
+    cur.execute('UPDATE `projects` SET `backer_count` = `backer_count` + 1 WHERE `projects`.`id` = %s and `projects`.`id` IN (SELECT DISTINCT `project_id` FROM `backings` WHERE `project_id` = %s)', (project_id, project_id))
+    conn.commit()
+    cur.close()
+    conn.close()
+        
+    """Fetch all backings for a specific project"""
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+    cur.execute("SELECT id, creator_id, funding_goal, deadline, status FROM projects WHERE id = %s", (project_id,))
+    project = cur.fetchone()
+    return project

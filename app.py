@@ -1,45 +1,34 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, Blueprint, jsonify,session
-import mysql.connector
-from werkzeug.security import check_password_hash
-from models.users import table_name
-from models.backings import create_backing_table
-from models.projects import create_projects_table
-from models.updates import create_updates_table
-from models.rewards import create_rewards_table
-from models.sessions import create_sessions_table
-from config import my_db
-from api.user import user_bp
-from api.projects import projects_bp, project_owner_required
-import time
+from flask import Flask, render_template
+from config import Config
+from routes.user import user_bp
+from routes.projects import projects_bp
+from routes.backings import backings_blueprint
+import base64
 
-app = Flask(__name__, template_folder='templates')
-app.secret_key = 'your_secret_key_here'
 
-conn = mysql.connector.connect(host='localhost',user='root',passwd='',database='crowd_funding')
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    app.config['DEBUG'] = True
 
-@app.route('/')
-def fess():
-    user_id = session.get('user_id')
-    if user_id:
-        flash('Please login first')
-        return render_template('auth/register.html')
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE Id = %s", (user_id,))
-    row = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('base.html')
+    @app.route("/")
+    def home():
+        return render_template("index.html")
 
-@app.route('/lohin')
-def tosec():
-    return render_template('auth/login.html')
+    app.register_blueprint(user_bp)
+    app.register_blueprint(projects_bp)
+    app.register_blueprint(backings_blueprint)
+    
+    # Add b64encode filter for Jinja2
+    def b64encode_filter(x):
+        if isinstance(x, bytes):
+            return base64.b64encode(x).decode('utf-8')
+        return ''
+    app.jinja_env.filters['b64encode'] = b64encode_filter
 
-@app.route('/to_admin')
-def admin():
-    return render_template('admin/auth/register.html')
+    return app
 
-app.register_blueprint(user_bp)
-app.register_blueprint(projects_bp)
+app = create_app()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

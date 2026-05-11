@@ -1,41 +1,182 @@
-{% extends 'base.html'%}
-{%block list%}
-    <h2>
-        <a href="/projects/to_creator">Create a project</a>
-    </h2>
+{% extends 'base.html' %}
+{% block list %}
 
-  <div class="main" style="justify-content: space-between;display: flex;padding-top: 10px;">
-    {%for ace in curts%}
-      {%for den in slet%}
-        <a href="/projects/list/active/{{den[1]}}" style="text-decoration: none;">
-      {%endfor%}
-          <h3>Active Projects</h3>
-          <h2>{{ace[0]}}</h2>
-        </a>
-    {%endfor%}
-    {%for pill in thrd%}
-      <a href="hjk" style="text-decoration: none;">
-        <h3>Pending Projects</h3>
-        <h2>{{pill[0]}}</h2>
-      </a>
-    {%endfor%}
-    {%for thd in pels%}
-      <a href="#" style="text-decoration: none;">
-        <h3>Rejected Projects</h3>
-        <h2>{{thd[0]}}</h2>
-      </a>
-    {%endfor%}
-  </div>
-  
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flash-messages">
-          {% for message in messages %}
-            <div class="flash">{{ message }}
-                <a href="javascript:void(0)">X</a>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/list.css') }}">
+
+<!-- Dashboard Header -->
+{%if datas%}
+        <div class="dashboard-header">
+            <div class="user-welcome">
+                <h1>Welcome back, {{ datas.user.First_name }} 👋</h1>
+                <span class="role-badge role-{{ datas.role }}">{{ datas.role|title }}</span>
             </div>
-          {% endfor %}
+            
+            {% if datas.role == 'creator' %}
+            <a href="/projects/create_project" class="btn btn-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Create New Project
+            </a>
+            {% endif %}
         </div>
-      {% endif %}
-    {% endwith %}
-{%endblock%}
+
+        <!-- Stats Cards (Creator Only) -->
+        {% if datas.role == 'creator' %}
+        <div class="stats-grid">
+            <div class="stat-card stat-active">
+                <div class="stat-icon">🚀</div>
+                <div class="stat-info">
+                    <h3>{{ datas.stats.active }}</h3>
+                    <p>Active Projects</p>
+                </div>
+            </div>
+            <div class="stat-card stat-pending">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-info">
+                    <h3>{{ datas.stats.pending }}</h3>
+                    <p>Pending Review</p>
+                </div>
+            </div>
+            <div class="stat-card stat-rejected">
+                <div class="stat-icon">❌</div>
+                <div class="stat-info">
+                    <h3>{{ datas.stats.rejected }}</h3>
+                    <p>Rejected</p>
+                </div>
+            </div>
+            <div class="stat-card stat-total">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                    <h3>{{ datas.stats.total }}</h3>
+                    <p>Total Projects</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Projects Section -->
+        <div class="projects-section">
+            <h2 class="section-title">
+                {% if datas.role == 'creator' %}
+                    Your Projects
+                {% elif datas.role == 'backer' %}
+                    Backed Projects
+                {% else %}
+                    Explore Projects
+                {% endif %}
+            </h2>
+
+            {% if datas.projects %}
+                <div class="projects-grid">
+                    {% for project in datas.projects %}
+                    <article class="project-card" datas-status="{{ project.status }}">
+                        <!-- Project Image -->
+                        <div class="project-image">
+                            {% if project.main_image_url %}
+                                {% if project.main_image_url is string %}
+                                    <img src="{{ project.main_image_url }}" alt="{{ project.title }}">
+                                {% else %}
+                                    <img src="data:image/jpeg;base64,{{ project.main_image_url|b64encode }}" alt="{{ project.title }}">
+                                {% endif %}
+                            {% else %}
+                                <div class="project-image-placeholder">
+                                    <span>{{ project.title[:2]|upper }}</span>
+                                </div>
+                            {% endif %}
+                            <span class="status-badge status-{{ project.status }}">
+                                {{ project.status|replace('_', ' ')|title }}
+                            </span>
+                        </div>
+
+                        <!-- Project Content -->
+                        <div class="project-content">
+                            <h3 class="project-title">{{ project.title }}</h3>
+                            <p class="project-description">{{ project.short_desc or project.description[:100] }}...</p>
+                            
+                            <!-- Progress Bar -->
+                            <div class="funding-progress">
+                                <div class="progress-bar">
+                                    {% set percent = (project.current_amount / project.funding_goal * 100)|round|int %}
+                                    <div class="progress-fill" style="width: {{ [percent, 100]|min }}%"></div>
+                                </div>
+                                <div class="progress-stats">
+                                    <span class="raised">${{ "{:,.0f}".format(project.current_amount) }} raised</span>
+                                    <span class="goal">of ${{ "{:,.0f}".format(project.funding_goal) }}</span>
+                                    <span class="percent">{{ percent }}%</span>
+                                </div>
+                            </div>
+
+                            <!-- Meta Info -->
+                            <div class="project-meta">
+                                <div class="meta-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                    {{ project.backers_count }} backers
+                                </div>
+                                <div class="meta-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    {% if project.days_remaining > 0 %}
+                                        {{ project.days_remaining }} days left
+                                    {% else %}
+                                        Ended
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="project-actions">
+                                <a href="/projects/{{ project.Id }}" class="btn btn-secondary">View Details</a>
+                                {% if datas.role == 'creator' and project.status == 'draft' %}
+                                    <a href="/projects/{{ project.Id }}/edit" class="btn btn-outline">Edit</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- Empty State -->
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <h3>No projects yet</h3>
+                    <p>
+                        {% if datas.role == 'creator' %}
+                            Start your first crowdfunding campaign today!
+                        {% else %}
+                            You haven't backed any projects yet. Explore active campaigns!
+                        {% endif %}
+                    </p>
+                    {% if datas.role == 'creator' %}
+                        <a href="/projects/create_project" class="btn btn-primary">Create Project</a>
+                    {% else %}
+                        <a href="/projects/explore" class="btn btn-primary">Explore Projects</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+{%endif%}
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="flash-messages">
+            {% for message in messages %}
+                <div class="flash flash-{{ category }}">
+                    {{ message }}
+                    <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+{% endblock %}

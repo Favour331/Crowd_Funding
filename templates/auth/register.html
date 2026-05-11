@@ -1,35 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base</title>
-</head>
-<body>
-    <form action="/register_users" method="POST">
-        <label for="">User name</label>
-        <input type="text" name="user_name" aria-required="true">
-        <label for="">First Name</label>
-        <input type="text" name="firstname" aria-required="true">
-        <label for="">Last Name</label>
-        <input type="text" name="lastname" aria-required="true">
-        <label for="">Email</label>
-        <input type="email" name="email" aria-required="true">
-        <label for="">Password</label>
-        <input type="password" name="passwd">
-        <select name="role" id="">
-            <option value="Creator">Creator</option>
-            <option value="Backer">Backer</option>
-        </select>
-        <button type="submit">Submit</button>
-    </form>
-    <a href="/login">To Login</a>
-    <div>
-        <main>
-            <span>
-                <a href="/to_admin">Press here if you are an admin</a>
-            </span>
-        </main>
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Register | Crowd Funding{% endblock %}
+
+{% block content %}
+<style>
+    .auth-page { display:grid; grid-template-columns:1fr; gap:32px; align-items:center; min-height:calc(100vh - 180px); padding:40px 0; }
+    .auth-panel { background:#eef2ff; color:#0f172a; border-radius:28px; padding:36px; box-shadow:0px 10px 10px rgba(15, 23, 42, 0.493); }
+    .auth-panel h2 { margin:0 0 16px; font-size:2.4rem; line-height:1.05; }
+    .auth-panel p { margin:0; color:#475569; max-width:36rem; font-size:1rem; }
+    .auth-card { background:#fff; border:1px solid #e5e7eb; border-radius:28px; box-shadow:0 24px 48px rgba(15,23,42,0.08); padding:40px; max-width:620px; width:100%; }
+    .auth-card h1 { margin:0 0 12px; font-size:2rem; color:#111827; }
+    .auth-card p.intro { margin:0 0 28px; color:#64748b; line-height:1.75; }
+    .auth-form { display:grid; gap:18px; }
+    .field-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .auth-form label { display:block; font-size:.95rem; font-weight:600; margin-bottom:8px; color:#334155; }
+    .auth-form input, .auth-form select { width:100%; padding:14px 16px; border:1px solid #cbd5e1; border-radius:14px; background:#f8fafc; color:#0f172a; font-size:1rem; transition:border-color .2s ease, box-shadow .2s ease; }
+    .auth-form input:focus, .auth-form select:focus { outline:none; border-color:#818cf8; box-shadow:0 0 0 4px rgba(79,70,229,0.12); background:#fff; }
+    .auth-actions { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-top:8px; }
+    .auth-actions .text { color:#64748b; font-size:.95rem; }
+    .auth-card .btn { width:100%; }
+    .auth-switch { margin-top:28px; color:#64748b; font-size:.95rem; }
+    .auth-switch a { color:#4f46e5; font-weight:700; }
+    .flash-messages { margin-bottom:10px; display: flex;position: relative;width: 100%;}
+    .flash { background:#f8fafc; border:none solid #cbd5e1; color:red;}
+    .flash a { position:absolute; right:14px; top:14px; color:black; text-decoration:none; font-weight:700; }
+    @media (min-width:900px) { .auth-page { grid-template-columns:1.1fr 1fr; } .field-grid { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+    @media (max-width:780px) { .auth-card { padding:28px; } .auth-panel { padding:30px; } .field-grid { grid-template-columns:1fr; } }
+</style>
+
+<div class="auth-page">
+    <section class="auth-panel">
+        <h2>Create your account</h2>
+        <p>Register as a creator or backer to start funding ideas, launch your own campaign, and connect with your next community.</p>
+    </section>
+
+    <section class="auth-card">
+        <h1>Get started</h1>
+        <p class="intro">Complete the form below to create a secure Crowd Funding account.</p>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="flash">{{ message }} <a href="javascript:void(0)" onclick="this.parentElement.style.display='none'">✕</a></div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form action="/register" method="POST" class="auth-form">
+            <!-- <input type="hidden" name="role" value="{{ role }}">
+            <div class="field-grid">
+                <div>
+                    <label for="userName">Username</label>
+                    <input id="userName" name="user_name" type="text" required placeholder="Choose a username">
+                </div> -->
+                <!-- <div>
+                    <label for="role">Account type</label>
+                    <select id="role" name="role" required>
+                        <option value="Creator">Creator</option>
+                        <option value="Backer">Backer</option>
+                    </select>
+                </div> -->
+            <!-- </div> -->
+            <div class="field-grid">
+                <div>
+                    <label for="firstName">First name</label>
+                    <input id="firstName" name="firstname" type="text" required placeholder="First name">
+                </div>
+                <div>
+                    <label for="lastName">Last name</label>
+                    <input id="lastName" name="lastname" type="text" required placeholder="Last name">
+                </div>
+            </div>
+            <div>
+                <label for="registerEmail">Email address</label>
+                <input id="registerEmail" name="email" type="email" required placeholder="you@example.com">
+            </div>
+            <div>
+                <label for="registerPassword">Password</label>
+                <input id="registerPassword" name="passwd" type="password" required placeholder="Create a password">
+            </div>
+            <button type="submit" class="btn btn-primary">Create account</button>
+            <p class="auth-switch">Already registered? <a href="/login">Sign in instead</a></p>
+            <p class="auth-switch"><a href="/to_admin">Register as admin</a></p>
+        </form>
+    </section>
+</div>
+{% endblock %}

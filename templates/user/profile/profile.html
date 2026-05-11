@@ -10,6 +10,7 @@
         .container { max-width: 1000px; margin: 20px auto; padding: 20px; }
         .profile-header { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display:flex; gap:30px; align-items:start; }
         .profile-avatar { width:150px; height:150px; border-radius:50%; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); display:flex; align-items:center; justify-content:center; color:white; font-size:60px; }
+        .profile-avatar-img { width:150px; height:150px; border-radius:50%; object-fit:cover; display:block; }
         .profile-info h1 { font-size:28px; margin-bottom:5px; }
         .profile-stats { display:flex; gap:20px; margin-top:15px; }
         .stat-value{ font-size:24px; font-weight:bold; color:#667eea; }
@@ -21,26 +22,38 @@
     <div class="container">
         {% if user %}
             <div class="profile-header">
-                <div class="profile-avatar">👤</div>
+                <div class="profile-avatar">
+                    {% if user.profile_image_url is string %}
+                        <img class="profile-avatar-img" src="{{ user.profile_image_url }}" alt="{{ user.First_name }} {{ user.Last_name }}">
+                    {% else %}
+                        <img class="profile-avatar-img" src="data:image/jpeg;base64,{{ user.profile_image_url|b64encode }}" alt="{{ user.First_name }} {{ user.Last_name }}">
+                    {% endif %}
+                </div>
                 <div class="profile-info">
-                    <h1>{{ user.First_name }} {{ user.Last_name }}</h1>
+                    <h1>{{ user.Last_name }} {{ user.First_name }}</h1>
                     <p>{{ user.Bio or 'No bio provided yet.' }}</p>
-                    <div class="profile-stats">
-                        <div class="stat">
-                            <div class="stat-value">{{ projects|length }}</div>
-                            <div class="stat-label">Campaigns</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">{{ projects|sum(attribute='amount_raised') or 0 }}</div>
-                            <div class="stat-label">Funded</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">{{ projects|sum(attribute='backer_count') or 0 }}</div>
-                            <div class="stat-label">Backers</div>
-                        </div>
-                    </div>
                     {% if role == 'creator' %}
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <div class="stat-value">{{ projects|length }}</div>
+                                <div class="stat-label">Campaigns</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">{{ projects|sum(attribute='backer_count') or 0 }}</div>
+                                <div class="stat-label">Backers</div>
+                            </div>
+                        </div>
                         <button class="edit-btn" id="edit-btn">Edit Profile</button>
+                    {%elif role == 'backer' %}
+                            <div class="stat">
+                                <div class="stat-value">{{ projects.amount_raised or 0 }}</div>
+                                <div class="stat-label">Funded</div>
+                            </div>
+                            <button class="edit-btn" id="edit-btn">Edit Profile</button>
+                    {%else%}
+                            <div>
+                                <div class="stat-value">{{ projects|length }}</div>
+                            </div>
                     {% endif %}
                 </div>
             </div>
@@ -65,16 +78,16 @@
             {% elif role == 'backer' %}
                 <div class="section">
                     <h2>Your Pledges</h2>
-                    {% if backings %}
-                        {% for b in backings %}
+                    {% if projects %}
+                        {% for b in projects %}
                             <div class="campaign-card">
                                 <div style="flex:1">
                                     <h3>{{ b.project_title or 'Project #' ~ b.Project_Id }}</h3>
                                     <div class="campaign-meta">Pledged on: {{ b.created_at }} • Project status: {{ b.project_status }}</div>
                                 </div>
                                 <div style="text-align:right">
-                                    <div class="stat-value">{{ b.Amount }}</div>
-                                    <div class="stat-label">{{ b.Status }}</div>
+                                    <div class="stat-value">{{ b.amount_raised }}</div>
+                                    <div class="stat-label">{{ b.project_status }}</div>
                                 </div>
                             </div>
                         {% endfor %}

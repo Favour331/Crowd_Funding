@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    
+.profile-avatar { width:28%; height:130px; border-radius:12px; background:rgba(30, 30, 31, 0.103); color:#0a0a0a; display:flex; align-items:center; justify-content:center;gap: 1cm; font-size:28px; font-weight:800; }
+.profile-avatar-img { width:72px; height:72px; border-radius:50%; object-fit:cover; display:block; }
+.search-results { display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:20px;}
+.search-result { background:#fff; border:1px solid #e5e7eb; display: flex;padding: 2%;}
+</style>
+    <h1>Search Results</h1>
+    {% if results %}
+        <div class="search-results">
+            {% for result in results %}
+                <div class="search-result">
+                    {% if result.type == 'project' %}
+                        <a href="/user/profile/{{ result.Id }}" class="profile-avatar">
+                            {% if result.image %}
+                                {% if result.image is string %}
+                                    <img class="profile-avatar-img" src="{{ result.image }}" alt="{{ result.name }}'s profile picture">
+                                {% else %}
+                                    <img class="profile-avatar-img" src="data:image/jpeg;base64,{{ result.image|b64encode }}" alt="{{ result.name }}'s profile pic">
+                                {% endif %}
+                            {% endif %}
+                            <div >
+                                <p style="font-size: 1em;font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;margin-bottom: 1.5cm;">{{ result.name }}</p>
+                                <p style="font-size: 0.5cm;font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;margin-top: -1.3cm;">{{result.Role}}</p>
+                            </div>
+                        </a>
+                        <p>Created by: {{ result.creator_name }}</p>
+                    {% elif result.type == 'user' %}
+                        <a href="/user/profile/{{ result.Id }}" class="profile-avatar">
+                            {% if result.image %}
+                                {% if result.image is string %}
+                                    <img class="profile-avatar-img" src="{{ result.image }}" alt="{{ result.name }}'s profile picture">
+                                {% else %}
+                                    <img class="profile-avatar-img" src="data:image/jpeg;base64,{{ result.image|b64encode }}" alt="{{ result.name }}'s profile pic">
+                                {% endif %}
+                            {% endif %}
+                            <div >
+                                <p style="font-size: 1em;font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;margin-bottom: 1.5cm;">{{ result.name }}</p>
+                                <p style="font-size: 0.5cm;font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;margin-top: -1.3cm;">{{result.Role}}</p>
+                            </div>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="place-self: center;font-size: 20px;font-weight: 400;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">No results found for "{{ query }}".</p>
+    {% endif %}
+{% endblock %}

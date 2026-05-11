@@ -1,33 +1,193 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='css/base.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/boot.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='js/boot.js')}}">
-    
-</head>
-<body>
-    <div class="container-fluid p-2 fixed-top" id="head">
-        <nav class="container d-flex">
-            <div class="m-2">
-                {% for rows in row%}
-                    <h6>Welcome</h6>
-                    <h3 style="font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;">{{rows[1]}}</h3>
-                {% endfor %}
+﻿{% extends "base.html" %}
+
+{% block title %}Crowd Funding | Home{% endblock %}
+
+{% block content %}
+    <style>
+        .hero {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 3rem;
+            align-items: center;
+            padding: 4rem 0 2rem;
+        }
+        .hero-copy {
+            max-width: 620px;
+        }
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.12);
+            color: #3730a3;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .hero-copy h1 {
+            margin: 0 0 1.25rem;
+            font-size: clamp(2.75rem, 4vw, 4.75rem);
+            line-height: 0.95;
+        }
+        .hero-copy p.lead {
+            max-width: 520px;
+            font-size: 1.05rem;
+            color: #475569;
+            margin-bottom: 1.75rem;
+        }
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .hero-meta {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.75;
+        }
+        .hero-panel {
+            border-radius: 32px;
+            padding: 2rem;
+            background: linear-gradient(180deg, #eef2ff 0%, #ffffff 100%);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            box-shadow: 0 32px 80px rgba(99, 102, 241, 0.08);
+        }
+        .panel-item {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+        .panel-item:last-child { margin-bottom: 0; }
+        .panel-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+        .panel-copy {
+            color: #475569;
+            line-height: 1.8;
+        }
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 22px;
+            border: 1px solid #e2e8f0;
+            padding: 2rem;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+        }
+        .feature-card h3 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            font-size: 1.15rem;
+        }
+        .feature-card p {
+            margin: 0;
+            color: #475569;
+            line-height: 1.75;
+            font-size: 0.95rem;
+        }
+        .about-panel {
+            margin-top: 3rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+        .about-panel h2 {
+            margin-top: 0;
+            font-size: 2rem;
+        }
+        .about-panel p {
+            color: #475569;
+            line-height: 1.85;
+            font-size: 1rem;
+        }
+        .about-highlight {
+            background: #eef2ff;
+            padding: 2rem;
+            border-radius: 24px;
+            border: 1px solid rgba(99, 102, 241, 0.18);
+        }
+        .about-highlight h3 {
+            margin-bottom: 1rem;
+        }
+        .about-highlight p { margin: 0; }
+        .login-register-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 980px) {
+            .hero { grid-template-columns: 1fr; }
+            .section-grid { grid-template-columns: 1fr; }
+            .about-panel { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <section class="hero">
+        <div class="hero-copy">
+            <div class="eyebrow">Crowd Funding Platform</div>
+            <h1>Build trust, launch campaigns, and support the next great idea.</h1>
+            <p class="lead">A modern crowdfunding experience that brings creators, backers, and administrators together with transparency, secure pledges, and campaign momentum.</p>
+            <div class="hero-actions">
+                <a href="/choose_plan" class="btn btn-primary">Create an account</a>
+                <a href="/login" class="btn btn-secondary">Login</a>
             </div>
-            <ul class="d-flex mt-3">
-                <li><a href="projects/see">Projects</a></li>
-                <li><a href="#">Tracker</a></li>
-                <li><a href="#">Rewards</a></li>
-                <li><a href="#">Support</a></li>
-            </ul>
-        </nav>
-    </div>
-    <main>
-        {%block dash%}{%endblock%}
-    </main>
-</body>
-</html>
+            <p class="hero-meta">Designed for creators who need funding, backers who want to discover meaningful campaigns, and admins who keep the platform safe and growing.</p>
+        </div>
+
+        <div class="hero-panel">
+            <div class="panel-item">
+                <div class="panel-label">For Creators</div>
+                <div class="panel-copy">Launch projects with curated rewards, community updates, and easy backing management.</div>
+            </div>
+            <div class="panel-item">
+                <div class="panel-label">For Backers</div>
+                <div class="panel-copy">Find campaigns that match your interests, support creators, and track pledges in one place.</div>
+            </div>
+            <div class="panel-item">
+                <div class="panel-label">For Admins</div>
+                <div class="panel-copy">Manage approvals, review campaigns, and keep the platform secure with clear oversight tools.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-grid">
+        <article class="feature-card">
+            <h3>Platform transparency</h3>
+            <p>Every project, reward, and update is visible to the community so supporters can pledge with confidence.</p>
+        </article>
+        <article class="feature-card">
+            <h3>Trusted campaign controls</h3>
+            <p>Administrators oversee project approvals, author reviews, and pledge tracking to keep funding moving smoothly.</p>
+        </article>
+        <article class="feature-card">
+            <h3>Community-first experience</h3>
+            <p>Create stronger connections with backers through updates, comments, and shared goals on every active campaign.</p>
+        </article>
+    </section>
+
+    <section class="about-panel">
+        <div>
+            <h2>About Us</h2>
+            <p>We are committed to creating a professional crowdfunding platform that supports ambitious creators, engaged backers, and careful administrators. Our mission is to help meaningful projects gain the funding they need while protecting the community with thoughtful controls and clear communication.</p>
+            <div class="login-register-links">
+                <a href="/login" class="btn btn-secondary">Login</a>
+                <a href="/choose_plan" class="btn btn-primary">Register now</a>
+            </div>
+        </div>
+        <div class="about-highlight">
+            <h3>Why choose this platform?</h3>
+            <p>From funding management to reward delivery, our platform is built to help ideas grow responsibly. Admins can review campaigns, creators can share progress, and backers can trust every step of the process.</p>
+        </div>
+    </section>
+{% endblock %}
