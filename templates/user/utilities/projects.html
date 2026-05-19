@@ -1,364 +1,528 @@
-{% extends 'base.html' %}
-{% block dash %}
+<div class="project-detail-page">
+    <style>
+        .project-detail-page {
+            background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+            min-height: 100vh;
+        }
 
-<style>
-    .projects-container {
-        max-width:1200px;
-        margin: 28px auto;
-        padding: 26px;
-        background: rgba(255,255,255,0.98);
-        border-radius: 24px;
-        box-shadow: 0 24px 60px rgba(15,23,42,0.08);
-        border: 1px solid rgba(15,23,42,0.06);
-    }
-    .projects-header {
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        margin-bottom:28px;
-        gap:16px;
-        flex-wrap:wrap;
-    }
-    .projects-title {
-        font-size:2.6rem;
-        font-weight:800;
-        color:#0f172a;
-        margin:0;
-        letter-spacing:-0.04em;
-    }
-    .projects-controls {
-        display:flex;
-        align-items:center;
-        width:100%;
-        justify-content:flex-end;
-    }
-    .filters-form {
-        display:flex;
-        gap:12px;
-        align-items:center;
-        flex-wrap:wrap;
-        background:#f8fafc;
-        padding:14px;
-        border-radius:18px;
-        border:1px solid #e2e8f0;
-        width:100%;
-    }
-    .filter-input,
-    .filter-select {
-        padding:12px 14px;
-        border:1px solid #cbd5e1;
-        border-radius:14px;
-        background:#fff;
-        color:#0f172a;
-        min-width:180px;
-        transition:border-color .2s ease, box-shadow .2s ease;
-    }
-    .filter-input:focus,
-    .filter-select:focus {
-        outline:none;
-        border-color:#4f46e5;
-        box-shadow:0 0 0 4px rgba(79,70,229,0.14);
-    }
-    .btn-link,
-    .btn-ghost {
-        border:none;
-        border-radius:14px;
-        cursor:pointer;
-        transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
-    }
-    .btn-link {
-        text-decoration:none;
-        color:#fff;
-        background:linear-gradient(90deg,#4f46e5,#06b6d4);
-        padding:12px 18px;
-        font-weight:700;
-        box-shadow:0 14px 30px rgba(79,70,229,0.18);
-    }
-    .btn-link:hover {
-        transform:translateY(-1px);
-        box-shadow:0 18px 40px rgba(79,70,229,0.22);
-    }
-    .btn-ghost {
-        background:#fff;
-        color:#0f172a;
-        border:1px solid #cbd5e1;
-        padding:11px 18px;
-    }
-    .btn-ghost:hover {
-        background:#f1f5f9;
-    }
-    @media (max-width:640px){
-        .filters-form { width:100%; }
-        .filter-input{ flex:1 1 100%; }
-        .filter-select{ flex:1 1 48%; }
-        .filters-form .btn-link, .filters-form .btn-ghost { flex:1 1 auto; }
-    }
+        .project-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
 
-    .projects-grid {
-        display:grid;
-        grid-template-columns: repeat(2, minmax(320px, 1fr));
-        column-gap:24px;
-        row-gap:30px;
-        gap:24px;
-        width:auto;
-        align-items:start;
-        grid-auto-rows:minmax(0, auto);
-    }
-    @media (max-width:1000px){ .projects-grid{ grid-template-columns: 1fr; } }
-    @media (max-width:640px){ .projects-grid{ grid-template-columns: 1fr; gap:24px; } }
+        .project-main-card {
+            background: var(--surface);
+            border-radius: 2rem;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            border: 1px solid rgba(99, 102, 241, 0.08);
+        }
 
-    .card {
-        background: #fff;
-        border-radius:22px;
-        box-shadow: 0 16px 40px rgba(15,23,42,0.08);
-        padding:24px;
-        display:flex;
-        flex-direction:column;
-        height:100%;
-        width:auto;
-        transition:transform .25s ease, box-shadow .25s ease;
-        border:1px solid rgba(15,23,42,0.06);
-        min-height: 220px;
-    }
-    .card:hover {
-        transform:translateY(-4px);
-        box-shadow:0 24px 50px rgba(15,23,42,0.12);
-    }
-    .card-head {
-        display:flex;
-        justify-content:space-between;
-        gap:16px;
-        align-items:flex-start;
-    }
-    .card-image {
-        margin-top:18px;
-        border-radius:18px;
-        overflow:hidden;
-        min-height:200px;
-        background:#f8fafc;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-    .card-image img {
-        width:100%;
-        height:auto;
-        display:block;
-        object-fit:cover;
-    }
-    .card-title {
-        font-size:1.45rem;
-        font-weight:800;
-        color:#111827;
-        margin:0 0 8px 0;
-    }
-    .card-sub {
-        color:#64748b;
-        font-size:0.95rem;
-        line-height:1.6;
-    }
-    .card-sub a {
-        color:#4f46e5;
-        text-decoration:none;
-        font-weight:700;
-    }
-    .card-sub a:hover {
-        text-decoration:underline;
-    }
+        .project-header {
+            padding: 2rem 2rem 0 2rem;
+        }
 
-    .card-desc {
-        color:#334155;
-        margin-top:18px;
-        font-size:1.05rem;
-        line-height:1.75;
-        font-weight:600;
-        flex:1;
-    }
+        .project-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text-dark), var(--primary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
 
-    .card-meta {
-        display:flex;
-        gap:14px;
-        align-items:center;
-        margin-top:18px;
-        flex-wrap:wrap;
-    }
-    .badge {
-        padding:8px 12px;
-        border-radius:999px;
-        font-weight:700;
-        font-size:12px;
-        color:#0f172a;
-        background:#eef2ff;
-    }
-    .stat {
-        font-size:0.95rem;
-        color:#475569;
-    }
+        .project-creator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
 
-    .progress-wrap {
-        margin-top:18px;
-        background:#e2e8f0;
-        border-radius:999px;
-        overflow:hidden;
-        height:12px;
-    }
-    .progress-bar {
-        height:100%;
-        background:linear-gradient(90deg,#06b6d4,#4f46e5);
-        width:0%;
-        transition:width .6s ease;
-    }
+        .project-creator a {
+            color: var(--primary);
+            font-weight: 600;
+        }
 
-    .card-footer {
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        margin-top:22px;
-        flex-wrap:wrap;
-        gap:12px;
-    }
-    .status {
-        padding:8px 12px;
-        border-radius:999px;
-        font-weight:700;
-        font-size:0.82rem;
-        text-transform:capitalize;
-    }
-    .status.active { background:#dcfce7; color:#166534; }
-    .status.pending { background:#fff7ed; color:#92400e; }
-    .status.draft { background:#f1f5f9; color:#334155; }
-    .status.rejected, .status.failed { background:#fee2e2; color:#991b1b; }
+        .project-creator a:hover {
+            text-decoration: underline;
+        }
 
-    .empty-state {
-        text-align:center;
-        padding:40px;
-        color:#0d0d0e;
-        font-size:1.5rem;
-        background:#f8fafc;
-        border-radius:18px;
-        border:1px solid #e2e8f0;
-    }
+        .project-badges {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
 
-    .flash {
-        background:#fff7ed;
-        padding:12px 16px;
-        border-radius:14px;
-        border:1px solid #fde3a7;
-        color:#92400e;
-        margin-bottom:14px;
-        font-weight:600;
-    }
-</style>
+        .badge {
+            background: rgba(79, 70, 229, 0.1);
+            padding: 0.35rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.813rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
 
-<div class="projects-container">
-    <div class="projects-header">
-        <div class="projects-title">Projects</div>
-        <div class="projects-controls">
-            <form id="filtersForm" class="filters-form" action="/projects/list" method="GET" role="search">
-                <input type="search" name="q" placeholder="Search projects..." value="{{ request.args.get('q','') }}" class="filter-input" aria-label="Search projects">
+        .project-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
 
-                <select name="category" class="filter-select" aria-label="Filter by category">
-                    <option value="">All categories</option>
-                    <option value="art" {% if request.args.get('category') == 'art' %}selected{% endif %}>Art</option>
-                    <option value="film" {% if request.args.get('category') == 'film' %}selected{% endif %}>Film</option>
-                    <option value="music" {% if request.args.get('category') == 'music' %}selected{% endif %}>Music</option>
-                    <option value="games" {% if request.args.get('category') == 'games' %}selected{% endif %}>Games</option>
-                    <option value="tech" {% if request.args.get('category') == 'tech' %}selected{% endif %}>Technology</option>
-                    <option value="other" {% if request.args.get('category') == 'other' %}selected{% endif %}>Other</option>
-                </select>
+        .project-cover {
+            margin-top: 1.5rem;
+        }
 
-                <select name="status" class="filter-select" aria-label="Filter by status">
-                    <option value="">Any status</option>
-                    <option value="active" {% if request.args.get('status') == 'active' %}selected{% endif %}>Active</option>
-                    <option value="pending_review" {% if request.args.get('status') == 'pending_review' %}selected{% endif %}>Pending Review</option>
-                    <option value="draft" {% if request.args.get('status') == 'draft' %}selected{% endif %}>Draft</option>
-                    <option value="successful" {% if request.args.get('status') == 'successful' %}selected{% endif %}>Successful</option>
-                </select>
+        .project-cover img {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            object-fit: cover;
+        }
 
-                <select name="sort" class="filter-select" aria-label="Sort projects">
-                    <option value="newest" {% if request.args.get('sort') == 'newest' %}selected{% endif %}>Newest</option>
-                    <option value="most_funded" {% if request.args.get('sort') == 'most_funded' %}selected{% endif %}>Most Funded</option>
-                    <option value="most_backers" {% if request.args.get('sort') == 'most_backers' %}selected{% endif %}>Most Backers</option>
-                </select>
+        .project-body {
+            padding: 2rem;
+        }
 
-                <button type="submit" class="btn-link">Apply</button>
-                <button type="button" class="btn btn-ghost" id="clearFilters">Clear</button>
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .section p {
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-box {
+            background: var(--surface-muted);
+            padding: 1.25rem;
+            border-radius: 1rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-box h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-box p {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .progress-section {
+            margin: 1.5rem 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .progress-bar-bg {
+            background: var(--border);
+            border-radius: 1rem;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            height: 100%;
+            border-radius: 1rem;
+            width: 0%;
+            transition: width 0.6s ease;
+        }
+
+        .like-btn {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            padding: 0.625rem 1.25rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .like-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .like-btn.liked {
+            background: linear-gradient(135deg, #f43f5e, #ec4899);
+            color: white;
+            border-color: #ec4899;
+        }
+
+        @media (max-width: 768px) {
+            .project-header {
+                padding: 1.5rem 1.5rem 0 1.5rem;
+            }
+            
+            .project-title {
+                font-size: 1.5rem;
+            }
+            
+            .project-body {
+                padding: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: 1.5rem;
+            max-width: 450px;
+            width: 90%;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-xl);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+    </style>
+
+    <div class="project-container">
+        {% for ace in roll %}
+            <div class="project-main-card">
+                <div class="project-header">
+                    <h1 class="project-title">{{ ace.title }}</h1>
+                    <div class="project-creator">
+                        <span>by</span>
+                        <a href="/user/profile/{{ ace.creator_id }}">{{ ace.username }}</a>
+                    </div>
+                    <div class="project-badges">
+                        <span class="badge">{{ ace.category }}</span>
+                        <span class="badge">💰 Goal: ${{ ace.funding_goal }}</span>
+                        <span class="badge">📈 Raised: ${{ ace.amount_raised }}</span>
+                        <span class="badge">📊 Status: {{ ace.status }}</span>
+                    </div>
+                    <div class="project-actions">
+                        {% if ace.Id == backer %}
+                            <a href="/backers/projects/see/comment/{{ ace.id }}" class="btn btn-secondary">💬 Comment</a>
+                        {% else %}
+                            <button class="btn btn-primary back-project-btn" data-project-id="{{ ace.id }}">💰 Back This Project</button>
+                            <a href="/backers/projects/see/comment/{{ ace.id }}" class="btn btn-secondary">💬 Comment</a>
+                            <button class="like-btn" data-url="/like/{{ ace.id }}">❤️ Like</button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if ace.main_image_url %}
+                    <div class="project-cover">
+                        {% if ace.main_image_url is string %}
+                            <img src="{{ ace.main_image_url }}" alt="{{ ace.title }}">
+                        {% else %}
+                            <img src="data:image/jpeg;base64,{{ ace.main_image_url|b64encode }}" alt="{{ ace.title }}">
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <div class="project-body">
+                    <div class="section">
+                        <h3>📖 About This Project</h3>
+                        <p>{{ ace.description }}</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <h4>Risks & Challenges</h4>
+                            <p>{{ ace.risk_challenges or 'No major risks identified' }}</p>
+                        </div>
+                        <div class="stat-box">
+                            <h4>Rewards</h4>
+                            <p>{{ ace.rewards or 'Standard rewards available' }}</p>
+                        </div>
+                        <div class="stat-box">
+                            <h4>Timeline</h4>
+                            <p>Started: {{ ace.created_at }}<br>
+                            Deadline: {{ ace.deadline }}</p>
+                        </div>
+                    </div>
+
+                    <div class="progress-section">
+                        {% set raised = ace.amount_raised|default(0)|float %}
+                        {% set goal = ace.funding_goal|default(0)|float %}
+                        {% set pct = ( (raised / goal * 100) if goal > 0 else 0 )|round(0) %}
+                        <div class="progress-label">
+                            <span>Funding Progress</span>
+                            <span>{{ pct }}% funded</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: {{ pct }}%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.813rem; color: var(--text-light);">
+                            <span>Raised: ${{ raised }}</span>
+                            <span>Goal: ${{ goal }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state">Project not found.</div>
+        {% endfor %}
+    </div>
+
+    <!-- Back Project Modal -->
+    <div id="backProjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💰 Back This Project</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <form id="pledgeForm" action="" method="POST">
+                <input type="hidden" name="project_id" id="projectIdInput">
+                <div class="form-group">
+                    <label for="backerEmail">Email Address</label>
+                    <input type="email" id="backerEmail" name="email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="pledgeAmount">Pledge Amount ($)</label>
+                    <input type="number" id="pledgeAmount" name="amount" min="1" step="1" required placeholder="Enter amount">
+                </div>
+                <button type="submit" id="proceed" class="btn btn-primary" style="width: 100%;">Proceed to Payment</button>
             </form>
         </div>
     </div>
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="flash">{{ message }} <a href="javascript:void(0)" onclick="this.parentElement.style.display='none';">✕</a></div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script>
+    (function() {
+        // Like button functionality
+        document.querySelectorAll('.like-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                let url = this.dataset.url;
+                let button = this;
+                let isLiked = button.classList.contains('liked');
+                let method = isLiked ? 'DELETE' : 'POST';
 
-    {% if jects %}
-        <section class="projects-grid">
-            {% for ace in jects %}
-                {% set raised = ace.amount_raised|default(0)|float %}
-                {% set goal = ace.funding_goal|default(0)|float %}
-                {% set pct = ( (raised / goal * 100) if goal > 0 else 0 )|round(0) %}
+                button.disabled = true;
+                button.textContent = isLiked ? "Unliking..." : "Liking...";
 
-                <article class="card" aria-labelledby="project-{{ ace.id }}">
-                    <div class="card-head">
-                        <div>
-                            <h3 id="project-{{ ace.id }}" class="card-title">{{ ace.title or 'Untitled Project' }}</h3>
-                            <div class="card-sub">by <a href="/user/profile/{{ ace.creator_id }}" class="author-link">{{ ace.creator_name or ace.username }}</a></div>
-                        </div>
-                        <div style="text-align:right">
-                            <div class="badge">{{ ace.category or 'General' }}</div>
-                            <div style="margin-top:8px"> <span class="status {% if ace.status %}{{ ace.status.lower() }}{% endif %}"> {{ ace.status or 'unknown' }} </span></div>
-                        </div>
-                    </div>
-
-                    {% if ace.main_image_url %}
-                        <div class="card-image">
-                            {% if ace.main_image_url is string %}
-                                <img src="{{ ace.main_image_url }}" alt="{{ ace.title or 'Project image' }}">
-                            {% else %}
-                                <img src="data:image/jpeg;base64,{{ ace.main_image_url|b64encode }}" alt="{{ ace.title or 'Project image' }}">
-                            {% endif %}
-                        </div>
-                    {% endif %}
-
-                    <p class="card-desc">{{ ace.short_desc or (ace.description[:150] ~ '...') }}</p>
-
-                    <div class="card-meta">
-                        <div class="stat">💰 {{ raised or '0' }} raised</div>
-                        <div class="stat">🎯 Goal: {{ goal or '—' }}</div>
-                        <div class="stat">👥 {{ ace.backer_count or 0 }} backers</div>
-                        <div class="stat">❤️ {{ ace.like_count or 0 }}</div>
-                        <div class="stat">💬 {{ ace.comment_count or 0 }}</div>
-                    </div>
-
-                    <div class="progress-wrap" aria-hidden="true">
-                        <div class="progress-bar" style="width: {{ pct }}%"></div>
-                    </div>
-
-                    <div class="card-footer">
-                        <div class="stat">{{ pct }}% funded</div>
-                        <a class="btn-link" href="/backers/projects/see/{{ ace.id }}">View Details →</a>
-                    </div>
-                </article>
-            {% endfor %}
-        </section>
-    {% else %}
-        <div class="empty-state">There are no projects to display. Come back later!</div>
-    {% endif %}
-</div>
-
-<script>
-    (function(){
-        var clearBtn = document.getElementById('clearFilters');
-        if(!clearBtn) return;
-        clearBtn.addEventListener('click', function(){
-            // Redirect to the clean projects list URL
-            window.location = '/projects';
+                fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res => res.json().then(data => ({status: res.status, data: data})))
+                .then(({status, data}) => {
+                    button.disabled = false;
+                    if (status === 200 && data.success) {
+                        if (data.liked) {
+                            button.textContent = "❤️ Liked";
+                            button.classList.add('liked');
+                        } else {
+                            button.textContent = "❤️ Like";
+                            button.classList.remove('liked');
+                        }
+                    } else if (status === 401) {
+                        alert(data.message || "Please login to like projects");
+                        button.textContent = "❤️ Like";
+                    } else {
+                        alert(data.message || "Something went wrong");
+                        button.textContent = isLiked ? "❤️ Liked" : "❤️ Like";
+                    }
+                })
+                .catch(function(err) {
+                    console.error(err);
+                    alert("Network error. Please try again.");
+                    button.disabled = false;
+                    button.textContent = isLiked ? "❤️ Liked" : "❤️ Like";
+                });
+            });
         });
-    })();
-</script>
 
-{% endblock %}
+        // Modal functionality
+        const modal = document.getElementById('backProjectModal');
+        const closeBtn = document.getElementById('closeModal');
+        const pledgeForm = document.getElementById('pledgeForm');
+
+        document.querySelectorAll('.back-project-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.getElementById('projectIdInput').value = this.dataset.projectId;
+                }
+            });
+        });
+
+        if (closeBtn && modal) {
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+                if (pledgeForm) pledgeForm.reset();
+            });
+        }
+
+        if (modal) {
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    if (pledgeForm) pledgeForm.reset();
+                }
+            });
+        }
+
+        // Paystack payment
+        if (document.getElementById('proceed')) {
+            document.getElementById('proceed').onclick = function(e) {
+                e.preventDefault();
+                var email = document.getElementById('backerEmail').value;
+                var amountInput = parseFloat(document.getElementById('pledgeAmount').value);
+                
+                if (!email || email.indexOf('@') === -1) {
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+                if (isNaN(amountInput) || amountInput <= 0) {
+                    alert('Please enter a valid pledge amount.');
+                    return;
+                }
+                
+                var amount = Math.round(amountInput * 100);
+                var handler = PaystackPop.setup({
+                    key: 'pk_test_bf86aac07dc072c2a6bcbf1775c04aa7ea906882',
+                    email: email,
+                    amount: amount,
+                    currency: 'NGN',
+                    ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+                    callback: function(response) {
+                        var params = new URLSearchParams();
+                        params.append('email', email);
+                        params.append('amount', amountInput);
+                        params.append('project_id', document.getElementById('projectIdInput').value);
+                        params.append('reference', response.reference);
+                        
+                        fetch('/backers/projects/new_pledge', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: params.toString()
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status) {
+                                alert('Payment successful! Thank you for your support!');
+                                window.location.reload();
+                            } else {
+                                alert('Payment verification failed: ' + (data.message || 'Unknown error'));
+                            }
+                        })
+                        .catch(function(err) {
+                            alert('Verification error: ' + err);
+                        });
+                    },
+                    onClose: function() {
+                        alert('Transaction cancelled.');
+                    }
+                });
+                handler.openIframe();
+            };
+        }
+    })();
+    </script>
+</div>

@@ -2,42 +2,272 @@
 {% block dash %}
 
 <style>
-.dashboard { display:flex; justify-content:center; padding:24px 0; }
-.dashboard-inner { width:95%; max-width:1150px; display:grid; grid-template-columns: 320px 1fr; gap:20px; }
-.profile-card { background:#fff; padding:18px; border-radius:12px; box-shadow:0 6px 18px rgba(17,24,39,0.04); }
-.profile-avatar { width:72px; height:72px; border-radius:12px; background:linear-gradient(135deg,#4f46e5,#06b6d4); color:#fff; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:800; }
-.profile-avatar-img { width:72px; height:72px; border-radius:50%; object-fit:cover; display:block; }
-.profile-name { font-size:20px; font-weight:700; margin-top:8px; }
-.profile-role { color:#6b7280; margin-top:6px; font-weight:600; }
-.profile-actions { display:flex; gap:8px; margin-top:14px; }
-.btn { padding:10px 14px; border-radius:8px; text-decoration:none; font-weight:700; }
-.btn-primary { background:linear-gradient(90deg,#4f46e5,#06b6d4); color:#fff; }
-.btn-ghost { background:#fff; border:1px solid #e6edf3; color:#111827; }
+    .dashboard {
+        max-width: 1280px;
+        margin: 0 auto;
+    }
 
-.stats-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin-bottom:12px; }
-.stat { background:#fff; padding:14px; border-radius:10px; box-shadow:0 4px 12px rgba(17,24,39,0.04); }
-.stat h4 { margin:0; color:#64748b; font-size:13px; }
-.stat p { margin-top:8px; font-size:20px; font-weight:800; }
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 2rem;
+    }
 
-.welcome-panel { background:#fff; padding:18px; border-radius:12px; box-shadow:0 6px 18px rgba(17,24,39,0.04); }
-.welcome-panel h2 { margin:0 0 8px 0; }
-.welcome-panel p { color:#6b7280; }
+    @media (max-width: 900px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
 
-@media (max-width:900px){ .dashboard-inner{ grid-template-columns: 1fr; } .stats-grid{ grid-template-columns: repeat(2,1fr); } }
-@media (max-width:560px){ .stats-grid{ grid-template-columns: 1fr; } }
+    /* Profile Card */
+    .profile-card {
+        background: var(--surface);
+        border-radius: 1.5rem;
+        padding: 1.75rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(99, 102, 241, 0.08);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+
+    @media (max-width: 900px) {
+        .profile-card {
+            position: static;
+        }
+    }
+
+    .profile-header {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 1rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+
+    .profile-avatar-img {
+        width: 72px;
+        height: 72px;
+        border-radius: 1rem;
+        object-fit: cover;
+    }
+
+    .profile-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .profile-role {
+        font-size: 0.875rem;
+        color: var(--primary);
+        font-weight: 600;
+        margin-top: 0.25rem;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .quick-links {
+        margin-top: 1rem;
+    }
+
+    .quick-links-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-light);
+        margin-bottom: 0.75rem;
+    }
+
+    .quick-links a {
+        display: block;
+        padding: 0.625rem 0.875rem;
+        background: var(--surface-muted);
+        border-radius: 0.75rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+    }
+
+    .quick-links a:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateX(4px);
+    }
+
+    hr {
+        margin: 1.25rem 0;
+        border: none;
+        border-top: 1px solid var(--border);
+    }
+
+    /* Welcome Panel */
+    .welcome-panel {
+        background: var(--surface);
+        border-radius: 1.5rem;
+        padding: 1.75rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(99, 102, 241, 0.08);
+    }
+
+    .welcome-panel h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--text-dark), var(--primary));
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, var(--surface-muted), var(--surface));
+        padding: 1.25rem;
+        border-radius: 1rem;
+        border: 1px solid var(--border);
+        transition: all 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+    }
+
+    .stat-card h4 {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card p {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin: 0;
+    }
+
+    .section-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        margin: 1.5rem 0 1rem 0;
+        color: var(--text-dark);
+    }
+
+    .project-item, .pledge-item {
+        background: var(--surface-muted);
+        padding: 1rem;
+        border-radius: 1rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        transition: all 0.2s ease;
+        border: 1px solid var(--border-light);
+    }
+
+    .project-item:hover, .pledge-item:hover {
+        border-color: var(--primary-light);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .project-info h4, .pledge-info h4 {
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .project-info p, .pledge-info p {
+        font-size: 0.813rem;
+        color: var(--text-light);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        background: var(--surface-muted);
+        border-radius: 1rem;
+        color: var(--text-light);
+    }
+
+    .activity-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .activity-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+
+    .activity-list li:last-child {
+        border-bottom: none;
+    }
+
+    @media (max-width: 480px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .profile-actions {
+            justify-content: center;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .project-item, .pledge-item {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
 </style>
 
 <div class="dashboard">
-    <div class="dashboard-inner">
+    <div class="dashboard-grid">
+        <!-- Profile Sidebar -->
         <aside class="profile-card">
             {% if stats %}
                 {% set first_name = stats.First_name %}
                 {% set username = stats.username %}
                 {% set uid = stats.Id %}
                 {% set role = (stats.Role or '')|lower %}
-                {%set projects = stats.projects%}
-                {%set backers = stats.backers%}
-                {%set amount = stats.amount%}
+                {% set projects = stats.projects %}
+                {% set backers = stats.backers %}
+                {% set amount = stats.amount %}
             {% else %}
                 {% set first_name = '' %}
                 {% set username = '' %}
@@ -45,153 +275,163 @@
                 {% set role = '' %}
             {% endif %}
 
-            <div style="display:flex;gap:12px;align-items:center;">
-                        {% if stats.profile_image_url is string %}
-                            <img class="profile-avatar-img" src="{{ stats.profile_image_url }}" alt="{{ stats.title }}">
-                        {% else %}
-                            <img class="profile-avatar-img" src="data:image/jpeg;base64,{{ stats.profile_image_url|b64encode }}" alt="{{ stats.title }}">
-                        {% endif %}
+            <div class="profile-header">
+                {% if stats.profile_image_url is string %}
+                    <img class="profile-avatar-img" src="{{ stats.profile_image_url }}" alt="Profile">
+                {% else %}
+                    <div class="profile-avatar">{{ (first_name or username or 'U')[:1]|upper }}</div>
+                {% endif %}
                 <div>
-                    <div class="profile-name">Hello, {{ first_name or username or 'User' }}</div>
+                    <div class="profile-name">Hello, {{ first_name or username or 'User' }} 👋</div>
                     <div class="profile-role">{{ role|capitalize or 'Member' }}</div>
                 </div>
             </div>
 
             <div class="profile-actions">
                 {% if role == 'creator' %}
-                    <a class="btn btn-primary" href="/projects/create_project">Start a Project</a>
-                    <a class="btn btn-ghost" href="/projects/my_projects">My Projects</a>
+                    <a href="/projects/create_project" class="btn btn-primary">✨ Start a Project</a>
+                    <a href="/projects/my_projects" class="btn btn-secondary">📁 My Projects</a>
                 {% elif role == 'backer' %}
-                    <a class="btn btn-primary" href="/projects/explore">Explore Projects</a>
-                    <a class="btn btn-ghost" href="/user/profile/{{ uid }}">My Pledges</a>
+                    <a href="/projects/explore" class="btn btn-primary">🔍 Explore Projects</a>
+                    <a href="/user/profile/{{ uid }}" class="btn btn-secondary">💳 My Pledges</a>
                 {% else %}
-                    <a class="btn btn-primary" href="/projects/explore">Explore</a>
+                    <a href="/projects/explore" class="btn btn-primary">🚀 Explore</a>
                 {% endif %}
             </div>
 
-            <hr style="margin:14px 0;border:none;border-top:1px solid #eef2f7" />
+            <hr>
 
-            <div style="font-size:13px;color:#6b7280">Quick Links</div>
-            <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
-                <a href="/user/profile/{{ user_id }}" class="btn btn-ghost">View Profile</a>
-                <a href="/projects" class="btn btn-ghost">Browse Projects</a>
+            <div class="quick-links">
+                <div class="quick-links-title">Quick Links</div>
+                <a href="/user/profile/{{ user_id }}">👤 View Profile</a>
+                <a href="/projects">📋 Browse Projects</a>
+                <a href="/settings">⚙️ Settings</a>
             </div>
         </aside>
 
+        <!-- Main Content -->
         <section>
             <div class="welcome-panel">
-                <h2>Welcome back{{ ' ' + first_name if first_name else '' }} 👋</h2>
-                <p>Here's an overview tailored for your role: <strong>{{ role|capitalize or 'Member' }}</strong>.</p>
+                <h2>Welcome back{{ ' ' + first_name if first_name else '' }}!</h2>
+                <p>Here's what's happening with your <strong>{{ role|capitalize or 'Member' }}</strong> account.</p>
 
                 {% if role == 'creator' %}
-                    <div style="margin-top:12px" class="stats-grid">
-                        <div class="stat">
+                    <div class="stats-grid">
+                        <div class="stat-card">
                             <h4>Total Projects</h4>
                             <p>{{ projects if projects is defined else '0' }}</p>
                         </div>
-                        <div class="stat">
+                        <div class="stat-card">
                             <h4>Total Raised</h4>
-                            <p>{{ amount or '0.00' }}</p>
+                            <p>${{ amount or '0' }}</p>
                         </div>
-                        <div class="stat">
+                        <div class="stat-card">
                             <h4>Backers</h4>
-                            <p>{{ backers or '0'}}</p>
+                            <p>{{ backers or '0' }}</p>
                         </div>
                     </div>
 
-                    <div style="margin-top:16px">
-                        <h3 style="margin-bottom:10px">Your Projects</h3>
-                        {% if projects %}
-                            <div style="display:flex;flex-direction:column;gap:10px;">
-                                    <div style="background:#fff;padding:12px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid #eef2f7">
-                                        <div>
-                                            <div style="font-weight:700;color:#0f172a">{{stats.title or 'Title' }}</div>
-                                            <div style="font-size:13px;color:#64748b">{{ stats.short_desc or '...' }}</div>
-                                        </div>
-                                        <div style="text-align:right">
-                                            <div style="font-weight:700">{{ ((stats.amount_raised|float / stats.funding_goal|float * 100) if stats.funding_goal and (stats.funding_goal|float) > 0 else 0)|round(0) }}%</div>
-                                            <div style="font-size:12px;color:#6b7280">{{ stats.status or '—' }}</div>
-                                            <div style="margin-top:8px"><a class="btn btn-ghost" href="/backers/projects/see/{{ stats.Id or stats.id }}">View</a></div>
-                                        </div>
+                    <div>
+                        <div class="section-title">📌 Your Latest Project</div>
+                        {% if stats.title %}
+                            <div class="project-item">
+                                <div class="project-info">
+                                    <h4>{{ stats.title }}</h4>
+                                    <p>{{ stats.short_desc or 'No description' }}</p>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; color: var(--primary);">
+                                        {{ ((stats.amount_raised|float / stats.funding_goal|float * 100) if stats.funding_goal and (stats.funding_goal|float) > 0 else 0)|round(0) }}% funded
                                     </div>
+                                    <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;">
+                                        {{ stats.status or '—' }}
+                                    </div>
+                                    <a href="/backers/projects/see/{{ stats.Id or stats.id }}" class="btn btn-secondary" style="margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 0.75rem;">View →</a>
+                                </div>
                             </div>
                         {% else %}
-                            <div class="empty">You haven't created any projects yet.</div>
+                            <div class="empty-state">
+                                <p>✨ You haven't created any projects yet.</p>
+                                <a href="/projects/create_project" class="btn btn-primary" style="margin-top: 0.75rem;">Start Your First Project</a>
+                            </div>
                         {% endif %}
                     </div>
 
                 {% elif role == 'backer' %}
-                    <div style="margin-top:12px" class="stats-grid">
-                        <div class="stat">
+                    <div class="stats-grid">
+                        <div class="stat-card">
                             <h4>Total Pledges</h4>
                             <p>{{ backings|length if backings is defined else '0' }}</p>
                         </div>
-                        <div class="stat">
+                        <div class="stat-card">
                             <h4>Total Pledged</h4>
-                            <p>{{ backings|sum(attribute='Amount') or '0' }}</p>
+                            <p>${{ backings|sum(attribute='Amount') if backings is defined else '0' }}</p>
                         </div>
-                        <div class="stat">
+                        <div class="stat-card">
                             <h4>Projects Backed</h4>
                             <p>{{ backings|map(attribute='Project_Id')|unique|list|length if backings is defined else '0' }}</p>
                         </div>
                     </div>
 
-                    <div style="margin-top:16px">
-                        <h3 style="margin-bottom:10px">Recent Pledges</h3>
+                    <div>
+                        <div class="section-title">💝 Recent Pledges</div>
                         {% if backings %}
-                            <div style="display:flex;flex-direction:column;gap:10px;">
-                                {% for b in backings|sort(attribute='created_at', reverse=true) %}
-                                    {% if loop.index <= 5 %}
-                                    <div style="background:#fff;padding:12px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid #eef2f7">
-                                        <div>
-                                            <div style="font-weight:700;color:#0f172a">{{ b.project_title or ('Project #' ~ b.Project_Id) }}</div>
-                                            <div style="font-size:13px;color:#64748b">Pledged {{ b.Amount }} • {{ b.created_at }}</div>
+                            {% for b in backings|sort(attribute='created_at', reverse=true) %}
+                                {% if loop.index <= 5 %}
+                                    <div class="pledge-item">
+                                        <div class="pledge-info">
+                                            <h4>{{ b.project_title or ('Project #' ~ b.Project_Id) }}</h4>
+                                            <p>Pledged ${{ b.Amount }} • {{ b.created_at }}</p>
                                         </div>
-                                        <div style="text-align:right">
-                                            <div style="font-weight:700">{{ b.Status or '' }}</div>
-                                            <div style="margin-top:8px"><a class="btn btn-ghost" href="/backers/projects/see/{{ b.Project_Id }}">View</a></div>
+                                        <div>
+                                            <span class="badge" style="background: rgba(79, 70, 229, 0.1); color: var(--primary);">
+                                                {{ b.Status or 'Pending' }}
+                                            </span>
+                                            <a href="/backers/projects/see/{{ b.Project_Id }}" class="btn btn-secondary" style="margin-left: 0.5rem; padding: 0.5rem 1rem; font-size: 0.75rem;">View</a>
                                         </div>
                                     </div>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
+                                {% endif %}
+                            {% endfor %}
                         {% else %}
-                            <div class="empty">You haven't pledged to any projects yet.</div>
+                            <div class="empty-state">
+                                <p>🌟 You haven't pledged to any projects yet.</p>
+                                <a href="/projects/explore" class="btn btn-primary" style="margin-top: 0.75rem;">Discover Projects</a>
+                            </div>
                         {% endif %}
                     </div>
 
                 {% else %}
-                    <div class="stats-grid" style="margin-top:12px">
-                        <div class="stat">
+                    <div class="stats-grid">
+                        <div class="stat-card">
                             <h4>Projects</h4>
                             <p>{{ projects|length if projects else '0' }}</p>
                         </div>
-                        <div class="stat">
+                        <div class="stat-card">
                             <h4>Pledges</h4>
                             <p>{{ backings|length if backings is defined else '0' }}</p>
                         </div>
-                        <div class="stat">
+                        <div class="stat-card">
                             <h4>Notifications</h4>
                             <p>{{ notifications|length if notifications is defined else '0' }}</p>
                         </div>
                     </div>
                 {% endif %}
-
             </div>
 
-            <div style="margin-top:18px">
-                <div class="welcome-panel">
-                    <h3>Recent activity</h3>
-                    {% if recent %}
-                        <ul style="margin-top:12px; padding-left:18px; color:#374151">
-                            {% for r in recent %}
-                                <li>{{ r }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="empty">No recent activity</p>
-                    {% endif %}
-                </div>
+            <!-- Recent Activity -->
+            <div class="welcome-panel">
+                <div class="section-title" style="margin-top: 0;">📋 Recent Activity</div>
+                {% if recent %}
+                    <ul class="activity-list">
+                        {% for r in recent %}
+                            <li>{{ r }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">
+                        <p>No recent activity to show.</p>
+                    </div>
+                {% endif %}
             </div>
         </section>
     </div>
